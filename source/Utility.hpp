@@ -1,0 +1,57 @@
+#ifndef Utility_hpp
+#define Utility_hpp true
+
+#include <cmath>
+#include <cassert>
+#include <type_traits>
+
+namespace Project::Utility {
+
+    template<class T>
+    [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic<T>::value, T> abs(T const& x) noexcept {
+        return x < T{} ? -x : x;
+    }
+
+    template <typename IntT>
+    constexpr std::enable_if<std::is_integral<IntT>::value, IntT> wrapValue(IntT value, IntT const upperBound) {
+        static constexpr IntT zero{0};
+        assert(upperBound > zero);
+        value %= upperBound;
+        if (value < zero) value += upperBound;
+        assert(value >= zero);
+        return value;
+    }
+
+    template <typename FloatT>
+    std::enable_if_t<std::is_floating_point<FloatT>::value, FloatT> wrapValue(FloatT value, FloatT const upperBound) {
+        static constexpr FloatT zero{0.0};
+
+        assert(upperBound != 0);
+        assert(zero < upperBound);
+
+        value = std::fmod(value, upperBound);
+
+        if (value < zero) value += upperBound;
+        
+        if (value >= upperBound) value = zero;
+
+        return value;
+    }
+
+    template <typename FloatT>
+    constexpr std::enable_if_t<std::is_floating_point<FloatT>::value, FloatT> linearInterpolation(
+        FloatT const percentage,
+        FloatT const start,
+        FloatT const end
+    ) {
+        static constexpr FloatT zeroPercent{0.0f};
+        static constexpr FloatT oneHundredPercent{1.0f};
+
+        assert(percentage >= zeroPercent);
+        assert(percentage <= oneHundredPercent);
+
+        return start * (oneHundredPercent - percentage) + end * percentage;
+    }
+}
+
+#endif
