@@ -11,7 +11,7 @@
 namespace Project::SdlContext {
     [[noreturn]]
     inline void errorOut() {
-        std::cerr << SDL_GetError() << '\n';
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s%c", SDL_GetError(), '\n');
         std::exit(EXIT_FAILURE);
     }
 
