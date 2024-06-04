@@ -1,3 +1,8 @@
+# "Hidden" files.
+.*
+!.gitignore
+!.gitkeep
+
 # Directory with the resulting program.
 artifact/
 
