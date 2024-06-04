@@ -13,8 +13,8 @@ namespace Project::Utility {
     }
 
     template <typename IntT>
-    constexpr std::enable_if<std::is_integral<IntT>::value, IntT> wrapValue(IntT value, IntT const upperBound) {
-        static constexpr IntT zero{0};
+    constexpr std::enable_if_t<std::is_integral<IntT>::value, IntT> wrapValue(IntT value, IntT const upperBound) {
+        constexpr IntT zero{0};
         assert(upperBound > zero);
         value %= upperBound;
         if (value < zero) value += upperBound;
@@ -44,8 +44,8 @@ namespace Project::Utility {
         FloatT const start,
         FloatT const end
     ) {
-        static constexpr FloatT zeroPercent{0.0f};
-        static constexpr FloatT oneHundredPercent{1.0f};
+        constexpr FloatT zeroPercent{0.0f};
+        constexpr FloatT oneHundredPercent{1.0f};
 
         assert(percentage >= zeroPercent);
         assert(percentage <= oneHundredPercent);
