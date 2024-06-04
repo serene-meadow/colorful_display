@@ -20,8 +20,7 @@ namespace SdlContext {
     }
 
     template <typename PointerT>
-    inline constexpr PointerT check(PointerT const pointer) {
-        static_assert(std::is_pointer_v<PointerT>);
+    inline constexpr std::enable_if_t<std::is_pointer_v<PointerT>, PointerT> check(PointerT const pointer) {
         if (pointer == nullptr) errorOut();
         else return pointer;
     }
