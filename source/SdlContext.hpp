@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-namespace SdlContext {
+namespace Project::SdlContext {
     [[noreturn]]
     inline void errorOut() {
         std::cerr << SDL_GetError() << '\n';
@@ -20,16 +20,18 @@ namespace SdlContext {
     }
 
     template <typename PointerT>
+    [[nodiscard]]
     inline constexpr std::enable_if_t<std::is_pointer_v<PointerT>, PointerT> check(PointerT const pointer) {
         if (pointer == nullptr) errorOut();
         else return pointer;
     }
 
-    extern Uint64 deltaTime;
     extern SDL_Window *window;
     extern SDL_Renderer *renderer;
-    extern Sint32 windowWidth;
-    extern Sint32 windowHeight;
+
+    extern Uint64 getDeltaTime();
+    extern int getWindowHeight(); 
+    extern int getWindowWidth();
 
     extern void exitHandler();
     extern void mainLoop();
