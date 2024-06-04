@@ -9,11 +9,10 @@ namespace Project::SdlContext {
     static Uint64 deltaTime{0u};
     static int windowWidth{430};
     static int windowHeight{430};
+    static int mouseX{0};
+    static int mouseY{0};
 
-    static CartesianGrid2d<HslaColor/* value type */, int/* size type */> colorGrid(
-        windowHeight/* row count */,
-        windowWidth/* column count*/
-    );
+    size_t constexpr a = sizeof(HslaColor);
 }
 
 Uint64 Project::SdlContext::getDeltaTime() { return deltaTime; }
@@ -36,7 +35,7 @@ void Project::SdlContext::mainLoop() {
     // Get the change in time.
     deltaTime = currentTime - previousTime;
 
-    static SDL_Event event{};
+    static SDL_Event event;
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
             case SDLK_BACKQUOTE:
@@ -50,8 +49,10 @@ void Project::SdlContext::mainLoop() {
             case SDL_WINDOWEVENT_RESIZED:
                 windowWidth = event.window.data1;
                 windowHeight = event.window.data2;
-                std::exit(EXIT_FAILURE);
                 break;
+        } break;
+        case SDL_MOUSEMOTION: {
+            SDL_GetMouseState(&mouseX, &mouseY);
         } break;
         case SDL_QUIT:
             std::exit(EXIT_SUCCESS);
@@ -68,23 +69,44 @@ void Project::SdlContext::mainLoop() {
     SDL_Delay(1u);
 }
 
-void Project::SdlContext::refreshWindow() {
+#include <array>
 
-    static constexpr auto drawOutwardColorGradient = [](double const centerX, double const centerY) -> void {
+void Project::SdlContext::refreshWindow() {
+    static HslaColor mainColor;
+
+    static double percentage{0.0};
+    double const deltaPercentage{static_cast<double>(deltaTime) * 0.0008};
+    percentage = Utility::wrapValue(percentage + deltaPercentage, 1.0);
+    mainColor.setHue(Utility::linearInterpolation(percentage, 0.0, 360.0));
+
+    static constexpr auto drawColorGradient = []() -> void {
         int const minLength{std::min(windowWidth, windowHeight)};
         double const colorUnit = 360.0 / static_cast<double>(minLength);
-        
+
+        std::vector<SDL_FPoint> const sourcePointList = {
+            // SDL_FPoint{windowWidth / 2.0f, windowHeight / 2.0f},
+            SDL_FPoint{0.0f, 0.0f},
+            // SDL_FPoint{windowWidth - 1.0f, 0.0f},
+            // SDL_FPoint{0.0f, windowHeight - 1.0f},
+            SDL_FPoint{static_cast<float>(mouseX), static_cast<float>(mouseY)},
+            SDL_FPoint{windowWidth - 1.0f, windowHeight - 1.0f},
+        };
+
         for (int y{0}; y < windowHeight; ++y) {
             for (int x{0}; x < windowWidth; ++x) {
-                double const distance{std::sqrt(
-                    std::pow(static_cast<double>(x) - centerX, 2.0) + std::pow(static_cast<double>(y) - centerY, 2.0)
-                )};
+                HslaColor hslaPixel(mainColor);
 
-                double const colorOffset{colorUnit * distance};
+                std::uint_fast8_t count{0};
+                for (auto const &point : sourcePointList) {
+                    double const distance{std::sqrt(
+                        std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0)
+                    )};
 
-                HslaColor hslaPixel = colorGrid.at(y/* row */, x/* column */);
+                    double const colorOffset{colorUnit * distance};
 
-                hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
+                    if (false or count++ % 2u == 0u) hslaPixel.setHue(hslaPixel.getHue() - colorOffset);
+                    else hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
+                }
 
                 SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
 
@@ -94,6 +116,6 @@ void Project::SdlContext::refreshWindow() {
         }
     };
 
-    drawOutwardColorGradient(windowWidth / 2, windowHeight / 2);
-
+    drawColorGradient();
+    SDL_RenderPresent(renderer);
 }
