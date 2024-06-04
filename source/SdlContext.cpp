@@ -81,7 +81,7 @@ void Project::SdlContext::refreshWindow() {
 
     static constexpr auto drawColorGradient = []() -> void {
         int const minLength{std::min(windowWidth, windowHeight)};
-        double const colorUnit = 360.0 / static_cast<double>(minLength);
+        double const colorUnit = 2.0 * 360.0 / static_cast<double>(minLength);
 
         std::vector<SDL_FPoint> const sourcePointList = {
             // SDL_FPoint{windowWidth / 2.0f, windowHeight / 2.0f},
