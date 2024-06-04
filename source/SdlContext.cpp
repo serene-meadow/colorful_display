@@ -22,22 +22,22 @@ void SdlContext::mainLoop() {
     Uint64 const currentTime{SDL_GetTicks64()};
 
     // Get the change in time.
-    SdlContext::deltaTime = currentTime - previousTime;
+    deltaTime = currentTime - previousTime;
 
     static SDL_Event event{};
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
             case SDLK_BACKQUOTE:
-                SDL_SetWindowFullscreen(SdlContext::window, SDL_WINDOW_FULLSCREEN);
+                SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
                 break;
             case SDLK_ESCAPE:
-                SDL_SetWindowFullscreen(SdlContext::window, 0u);
+                SDL_SetWindowFullscreen(window, 0u);
                 break;
         } break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
             case SDL_WINDOWEVENT_RESIZED:
-                SdlContext::windowWidth = event.window.data1;
-                SdlContext::windowHeight = event.window.data2;
+                windowWidth = event.window.data1;
+                windowHeight = event.window.data2;
                 break;
         } break;
         case SDL_QUIT:
@@ -45,6 +45,7 @@ void SdlContext::mainLoop() {
             break;
     }
 
+    // Refresh the window.
     refreshWindow();
 
     // As this iteration ends, update the previous time.
