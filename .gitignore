@@ -1,0 +1,5 @@
+# Directory with the resulting program.
+artifact/
+
+# Directory with dep files and object files.
+build/
