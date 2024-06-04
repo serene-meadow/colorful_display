@@ -8,12 +8,12 @@
 namespace Project::Utility {
 
     template<class T>
-    [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic<T>::value, T> abs(T const& x) noexcept {
+    [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> abs(T const& x) noexcept {
         return x < T{} ? -x : x;
     }
 
     template <typename IntT>
-    constexpr std::enable_if_t<std::is_integral<IntT>::value, IntT> wrapValue(IntT value, IntT const upperBound) {
+    constexpr std::enable_if_t<std::is_integral_v<IntT>, IntT> wrapValue(IntT value, IntT const upperBound) {
         constexpr IntT zero{0};
         assert(upperBound > zero);
         value %= upperBound;
@@ -23,7 +23,7 @@ namespace Project::Utility {
     }
 
     template <typename FloatT>
-    std::enable_if_t<std::is_floating_point<FloatT>::value, FloatT> wrapValue(FloatT value, FloatT const upperBound) {
+    std::enable_if_t<std::is_floating_point_v<FloatT>, FloatT> wrapValue(FloatT value, FloatT const upperBound) {
         static constexpr FloatT zero{0.0};
 
         assert(upperBound != 0);
@@ -39,7 +39,7 @@ namespace Project::Utility {
     }
 
     template <typename FloatT>
-    constexpr std::enable_if_t<std::is_floating_point<FloatT>::value, FloatT> linearInterpolation(
+    constexpr std::enable_if_t<std::is_floating_point_v<FloatT>, FloatT> linearInterpolation(
         FloatT const percentage,
         FloatT const start,
         FloatT const end
