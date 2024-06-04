@@ -22,6 +22,7 @@ int main() {
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
     ));
 
+    // Should I ask for a V-Sync renderer with the `SDL_RENDERER_PRESENTVSYNC` flag?
     Sdl::renderer = Sdl::check(SDL_CreateRenderer(Sdl::window, -1, 0u));
 
     SDL_SetRenderDrawColor(Sdl::renderer, 0u, 0u, 0u, 1u);
