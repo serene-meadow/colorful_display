@@ -2,15 +2,14 @@
 
 #include <sstream>
 #include <cassert>
-#include "Utility.hpp"
 
-std::string Project::Media::toString(SDL_Color const &color) {
+std::string Project::toString(SDL_Color const &color) {
     std::stringstream buffer;
     buffer << "(R=" << +color.r << ", G=" << +color.g << ", B=" << +color.b << ", A=" << +color.a << ")";
     return buffer.str();
 }
 
-SDL_Color Project::Media::makeRgbaColor(
+SDL_Color Project::makeRgbaColor(
     double const hue,
     double const saturation,
     double const luminance,
@@ -44,12 +43,12 @@ SDL_Color Project::Media::makeRgbaColor(
     };
 }
 
-double Project::Media::HslaColor::hueWrap(double const value) {
+double Project::HslaColor::hueWrap(double const value) {
     static constexpr double fullCycle{360.0};
     return Utility::wrapValue(value, fullCycle);
 }
 
-double Project::Media::HslaColor::getCyclicHue(
+double Project::HslaColor::getCyclicHue(
     double const hue,
     double const percentage,
     double const depth
@@ -62,15 +61,11 @@ double Project::Media::HslaColor::getCyclicHue(
         return hueWrap((hue + depth) - (hueOffset - depth));
 }
 
-SDL_Color Project::Media::HslaColor::toRgbaColor() const {
+SDL_Color Project::HslaColor::toRgbaColor() const {
     return makeRgbaColor(this->hue, this->saturation, this->luminance, this->alpha);
 }
 
-void Project::Media::HslaColor::addHue(double const hueSupplement) {
-    hue = hueWrap(hue + hueSupplement);
-}
-
-std::string Project::Media::HslaColor::toString() const {
+std::string Project::HslaColor::toString() const {
     std::stringstream buffer;
     buffer << "(H=" << hue << ", S=" << saturation << ", L=" << luminance << ", A=" << alpha << ")";
     return buffer.str();
