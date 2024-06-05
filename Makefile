@@ -8,10 +8,10 @@ ART_DIR := artifact
 
 COMPILER := c++
 
-COMPILER_FLAG_AUXI_LIST := -fsanitize=address,undefined $(shell pkg-config --cflags sdl2 SDL2_net)
+COMPILER_FLAG_AUXI_LIST := -fsanitize=undefined $(shell pkg-config --cflags sdl2 SDL2_net)
 COMPILER_FLAG_LIST := -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror -MMD -MP ${COMPILER_FLAG_AUXI_LIST}
 
-LINKER_FLAG_AUXI_LIST := -fsanitize=address,undefined $(shell pkg-config --libs sdl2 SDL2_net)
+LINKER_FLAG_AUXI_LIST := -fsanitize=undefined $(shell pkg-config --libs sdl2 SDL2_net)
 LINKER_FLAG_LIST := ${LINKER_FLAG_AUXI_LIST}
 
 OBJ_LIST := $(patsubst ${SRC_DIR}/%.cpp,${BLD_DIR}/${VAR_DIR}/%.o,$(wildcard ${SRC_DIR}/*.cpp))
