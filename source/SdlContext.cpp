@@ -11,8 +11,6 @@ namespace Project::SdlContext {
     static int windowHeight{430};
     static int mouseX{0};
     static int mouseY{0};
-
-    size_t constexpr a = sizeof(HslaColor);
 }
 
 Uint64 Project::SdlContext::getDeltaTime() { return deltaTime; }
