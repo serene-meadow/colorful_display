@@ -17,7 +17,7 @@ namespace Project {
     double const alpha=1.0
   );
 
-  struct HslaColor;
+  class HslaColor;
 }
 
 class Project::HslaColor {
