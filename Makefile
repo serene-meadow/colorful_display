@@ -3,21 +3,25 @@
 	`web`: WebAssembly program with JavaScipt script to load it. 
 target := native
 
-# Base name.
+# base name
 name := colorful_display
 
-# Source Directory
+# source directory
 SRC_DIR := source
 
-# Build Directory
+# build directory
 BLD_DIR := build/${target}
 
-# Artifact Directory
+# artifact directory
 ART_DIR := artifact/${target}
 
+# directory for website content generated from Emscripten
 WEB_DIR := website/generated
 
+# object files
 OBJ_LIST := $(patsubst ${SRC_DIR}/%.cpp,${BLD_DIR}/%.o,$(wildcard ${SRC_DIR}/*.cpp))
+
+# dependency files for `make`
 DEP_LIST := $(OBJ_LIST:.o=.d)
 
 COMPILER_FLAG_LIST := -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror -MMD -MP
@@ -42,28 +46,24 @@ endif
 .PHONY: all website info clean
 .POSIX: #(More portable?)
 
-
-ifeq (${target}, native)
-
-website:
-	make target=web website
-
-else ifeq (${target}, web)
-
+# Update website. (If not in `web` target, switch to `web` target to update the website.)
+ifeq (${target}, web)
 WEBSITE := $(patsubst ${ART_DIR}/%,${WEB_DIR}/%,${ARTIFACT})
-
 ${WEBSITE}: ${ARTIFACT} | ${WEB_DIR}
 	cp ${ARTIFACT} ${WEB_DIR}/
-
 website: ${WEBSITE}
-
+else
+website:
+	make target=web website
 endif
 
-ifeq (${target}, native)
-all: ${.DEFAULT_GOAL} website
-else ifeq (${target}, web)
+# Make all targets.
+ifeq (${target}, web)
+all: website
+	make target=native
+else
 all:
-	make target=native all
+	make target=web all
 endif
 
 info:
