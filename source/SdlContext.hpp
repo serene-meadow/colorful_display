@@ -11,7 +11,7 @@
 namespace Project::SdlContext {
     [[noreturn]]
     inline void errorOut() {
-        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "%s%c", SDL_GetError(), '\n');
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "%s", SDL_GetError());
         std::exit(EXIT_FAILURE);
     }
 
@@ -29,10 +29,13 @@ namespace Project::SdlContext {
     extern SDL_Window *window;
     extern SDL_Renderer *renderer;
     extern SDL_Texture *canvasBuffer;
+    extern SDL_PixelFormat *pixelFormat;
 
     extern Uint64 getDeltaTime();
-    extern int getWindowHeight(); 
     extern int getWindowWidth();
+    extern int getWindowHeight();
+
+    inline constexpr int canvasBufferWidth{100}, canvasBufferHeight{100};
 
     extern void exitHandler();
     extern void mainLoop();
