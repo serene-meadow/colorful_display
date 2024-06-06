@@ -88,8 +88,12 @@ ${OBJ_LIST}: ${BLD_DIR}/%.o: ${SRC_DIR}/%.cpp | ${BLD_DIR}
 	${compiler} ${COMPILER_FLAG_LIST} -c $< -o $@
 
 # Create directories.
-${ART_DIR} ${BLD_DIR} ${WEB_DIR}: %:
+${ART_DIR} ${BLD_DIR}: %:
 	mkdir --parents $@
+ifeq (${target}, web)
+${WEB_DIR}:
+	mkdir --parents $@
+endif
 
 # Remove built artifacts.
 clean:
