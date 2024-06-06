@@ -25,6 +25,20 @@ int main() {
     // Should I ask for a V-Sync renderer with the `SDL_RENDERER_PRESENTVSYNC` flag?
     Sdl::renderer = Sdl::check(SDL_CreateRenderer(Sdl::window, -1, 0u));
 
+    SDL_RendererInfo rendererInformation;
+    Sdl::check(SDL_GetRendererInfo(Sdl::renderer, &rendererInformation));
+
+    if (rendererInformation.num_texture_formats <= 0u) {
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "The renderer does not support any texture formats.\n");
+        return EXIT_FAILURE;
+    }
+
+    Sdl::canvasBuffer = Sdl::check(SDL_CreateTexture(
+        Sdl::renderer,
+        rendererInformation.texture_formats[0], SDL_TEXTUREACCESS_STREAMING,
+        Sdl::getWindowWidth(), Sdl::getWindowHeight()
+    ));
+
     SDL_SetRenderDrawColor(Sdl::renderer, 0u, 0u, 0u, 1u);
 
     #ifdef __EMSCRIPTEN__
