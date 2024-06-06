@@ -6,13 +6,10 @@ namespace Project::SdlContext {
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     SDL_Texture *canvasBuffer = nullptr;
+    SDL_PixelFormat *pixelFormat = nullptr;
 
     static Uint64 deltaTime{0u};
-    #ifdef __EMSCRIPTEN__
-    static int windowWidth{100}, windowHeight{100};
-    #else
     static int windowWidth{430}, windowHeight{430};
-    #endif
     static int mouseX{0}, mouseY{0};
 }
 
@@ -24,6 +21,7 @@ void Project::SdlContext::exitHandler() {
     if (window != nullptr) SDL_DestroyWindow(window);
     if (renderer != nullptr) SDL_DestroyRenderer(renderer);
     if (canvasBuffer != nullptr) SDL_DestroyTexture(canvasBuffer);
+    if (pixelFormat != nullptr) SDL_FreeFormat(pixelFormat);
     SDL_Quit();
 }
 
@@ -42,10 +40,10 @@ void Project::SdlContext::mainLoop() {
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
             case SDLK_BACKQUOTE:
-                SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+                check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN));
                 break;
             case SDLK_ESCAPE:
-                SDL_SetWindowFullscreen(window, 0u);
+                check(SDL_SetWindowFullscreen(window, 0u));
                 break;
         } break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
@@ -56,20 +54,18 @@ void Project::SdlContext::mainLoop() {
         } break;
         case SDL_MOUSEMOTION: {
             SDL_GetMouseState(&mouseX, &mouseY);
+            mouseX = Utility::linearInterpolation<float>(static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth);
+            mouseY = Utility::linearInterpolation<float>(static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight);
         } break;
         case SDL_QUIT:
             std::exit(EXIT_SUCCESS);
             break;
     }
 
-    // Refresh the window.
     refreshWindow();
 
     // As this iteration ends, update the previous time.
     previousTime = currentTime;
-
-    // Copy data from the canvas buffer to the window.
-    SDL_RenderCopy(renderer, canvasBuffer, NULL, NULL);
 
     // Give the CPU a break.
     SDL_Delay(1u);
@@ -85,43 +81,57 @@ void Project::SdlContext::refreshWindow() {
     percentage = Utility::wrapValue(percentage + deltaPercentage, 1.0);
     mainColor.setHue(Utility::linearInterpolation(percentage, 0.0, 360.0));
 
-    static constexpr auto drawColorGradient = []() -> void {
-        int const minLength{std::min(windowWidth, windowHeight)};
-        double const colorUnit = 2.0 * 360.0 / static_cast<double>(minLength);
+    int const minLength{std::min(canvasBufferWidth, canvasBufferHeight)};
+    double const colorUnit = 2.0 * 360.0 / static_cast<double>(minLength);
 
-        std::vector<SDL_FPoint> const sourcePointList = {
-            // SDL_FPoint{windowWidth / 2.0f, windowHeight / 2.0f},
-            SDL_FPoint{0.0f, 0.0f},
-            // SDL_FPoint{windowWidth - 1.0f, 0.0f},
-            // SDL_FPoint{0.0f, windowHeight - 1.0f},
-            SDL_FPoint{static_cast<float>(mouseX), static_cast<float>(mouseY)},
-            SDL_FPoint{windowWidth - 1.0f, windowHeight - 1.0f},
-        };
-
-        for (int y{0}; y < windowHeight; ++y) {
-            for (int x{0}; x < windowWidth; ++x) {
-                HslaColor hslaPixel(mainColor);
-
-                std::uint_fast8_t count{0};
-                for (auto const &point : sourcePointList) {
-                    double const distance{std::sqrt(
-                        std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0)
-                    )};
-
-                    double const colorOffset{colorUnit * distance};
-
-                    if (false or count++ % 2u == 0u) hslaPixel.setHue(hslaPixel.getHue() - colorOffset);
-                    else hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
-                }
-
-                SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
-
-                check(SDL_SetRenderDrawColor(renderer, rgbaPixel.r, rgbaPixel.g, rgbaPixel.b, rgbaPixel.a));
-                check(SDL_RenderDrawPoint(renderer, x, y));
-            }
-        }
+    std::vector<SDL_FPoint> const sourcePointList = {
+        // SDL_FPoint{windowWidth / 2.0f, windowHeight / 2.0f},
+        SDL_FPoint{0.0f, 0.0f},
+        // SDL_FPoint{windowWidth - 1.0f, 0.0f},
+        // SDL_FPoint{0.0f, windowHeight - 1.0f},
+        SDL_FPoint{static_cast<float>(mouseX), static_cast<float>(mouseY)},
+        SDL_FPoint{canvasBufferWidth - 1.0f, canvasBufferHeight - 1.0f},
     };
 
-    drawColorGradient();
+    void *pixelPointer;
+    int pitch;
+    check(SDL_LockTexture(canvasBuffer, nullptr/* lock entire texture */, &pixelPointer, &pitch));
+
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wnarrowing"
+    int const pixelRowLength{pitch / SDL_BYTESPERPIXEL(pixelFormat->format)};
+    #pragma GCC diagnostic pop
+
+    Uint32 *const pixelArray = static_cast<Uint32 *>(pixelPointer);
+
+    for (int y{0}; y < canvasBufferHeight; ++y) {
+        for (int x{0}; x < canvasBufferWidth; ++x) {
+            HslaColor hslaPixel(mainColor);
+
+            std::uint_fast8_t count{0};
+            for (auto const &point : sourcePointList) {
+                double const distance{std::sqrt(
+                    std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0)
+                )};
+
+                double const colorOffset{colorUnit * distance};
+
+                if (false or count++ % 2u == 0u) hslaPixel.setHue(hslaPixel.getHue() - colorOffset);
+                else hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
+            }
+
+            SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
+
+            pixelArray[y/* row */ * pixelRowLength + x/* column */] = SDL_MapRGBA(
+                pixelFormat, rgbaPixel.r, rgbaPixel.g, rgbaPixel.b, rgbaPixel.a
+            );
+        }
+    }
+
+    SDL_UnlockTexture(canvasBuffer);
+
+    // Copy pixel data from the canvas buffer to the window.
+    check(SDL_RenderCopy(renderer, canvasBuffer, nullptr/* use entire texture */, nullptr/* stretch texture to entire window */));
+
     SDL_RenderPresent(renderer);
 }
