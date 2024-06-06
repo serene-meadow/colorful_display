@@ -34,6 +34,8 @@ namespace Project::SdlContext {
     extern SDL_Texture *canvasBuffer;
     extern SDL_PixelFormat *pixelFormat;
 
+    extern void refreshCachedWindowSize();
+
     extern Uint64 getDeltaTime();
     extern int getWindowWidth();
     extern int getWindowHeight();

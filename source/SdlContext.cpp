@@ -13,6 +13,10 @@ namespace Project::SdlContext {
     static int mouseX{0}, mouseY{0};
 }
 
+void Project::SdlContext::refreshCachedWindowSize() {
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+}
+
 Uint64 Project::SdlContext::getDeltaTime() { return deltaTime; }
 int Project::SdlContext::getWindowHeight() { return windowHeight; }
 int Project::SdlContext::getWindowWidth() { return windowWidth; }
@@ -39,6 +43,10 @@ void Project::SdlContext::mainLoop() {
     static SDL_Event event;
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
+            case SDLK_COMMA:
+                int w, h; SDL_GetWindowSize(window, &w, &h);
+                SDL_Log("cached: (%i, %i), actual: (%i, %i)", windowWidth, windowHeight, w, h);
+                break;
             case SDLK_BACKQUOTE:
                 check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN));
                 break;
@@ -54,8 +62,12 @@ void Project::SdlContext::mainLoop() {
         } break;
         case SDL_MOUSEMOTION: {
             SDL_GetMouseState(&mouseX, &mouseY);
-            mouseX = Utility::linearInterpolation<float>(static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth);
-            mouseY = Utility::linearInterpolation<float>(static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight);
+            mouseX = Utility::linearInterpolation<float>(
+                static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
+            );
+            mouseY = Utility::linearInterpolation<float>(
+                static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
+            );
         } break;
         case SDL_QUIT:
             std::exit(EXIT_SUCCESS);
