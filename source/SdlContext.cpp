@@ -5,12 +5,15 @@
 namespace Project::SdlContext {
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
+    SDL_Texture *canvasBuffer = nullptr;
 
     static Uint64 deltaTime{0u};
-    static int windowWidth{430};
-    static int windowHeight{430};
-    static int mouseX{0};
-    static int mouseY{0};
+    #ifdef __EMSCRIPTEN__
+    static int windowWidth{100}, windowHeight{100};
+    #else
+    static int windowWidth{430}, windowHeight{430};
+    #endif
+    static int mouseX{0}, mouseY{0};
 }
 
 Uint64 Project::SdlContext::getDeltaTime() { return deltaTime; }
@@ -20,6 +23,7 @@ int Project::SdlContext::getWindowWidth() { return windowWidth; }
 void Project::SdlContext::exitHandler() {
     if (window != nullptr) SDL_DestroyWindow(window);
     if (renderer != nullptr) SDL_DestroyRenderer(renderer);
+    if (canvasBuffer != nullptr) SDL_DestroyTexture(canvasBuffer);
     SDL_Quit();
 }
 
@@ -33,6 +37,7 @@ void Project::SdlContext::mainLoop() {
     // Get the change in time.
     deltaTime = currentTime - previousTime;
 
+    // Handle events.
     static SDL_Event event;
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
@@ -62,6 +67,9 @@ void Project::SdlContext::mainLoop() {
 
     // As this iteration ends, update the previous time.
     previousTime = currentTime;
+
+    // Copy data from the canvas buffer to the window.
+    SDL_RenderCopy(renderer, canvasBuffer, NULL, NULL);
 
     // Give the CPU a break.
     SDL_Delay(1u);
