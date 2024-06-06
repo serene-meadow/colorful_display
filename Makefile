@@ -1,59 +1,99 @@
-NAME := colorful_display
+# The target defines what is build. \
+	`native`: Native executable program. \
+	`web`: WebAssembly program with JavaScipt script to load it. 
+target := native
+
+# Base name.
+name := colorful_display
+
+# Source Directory
 SRC_DIR := source
-BLD_DIR := build/native
-ART_DIR := artifact/native
 
-.DEFAULT_GOAL := ${ART_DIR}/${NAME}
+# Build Directory
+BLD_DIR := build/${target}
 
-COMPILER := c++
+# Artifact Directory
+ART_DIR := artifact/${target}
 
-COMPILER_FLAG_AUXI_LIST := -fsanitize=undefined $(shell pkg-config --cflags sdl2)
-COMPILER_FLAG_LIST := -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror -MMD -MP ${COMPILER_FLAG_AUXI_LIST}
-
-LINKER_FLAG_AUXI_LIST := -fsanitize=undefined $(shell pkg-config --libs sdl2)
-LINKER_FLAG_LIST := ${LINKER_FLAG_AUXI_LIST}
+WEB_DIR := website/generated
 
 OBJ_LIST := $(patsubst ${SRC_DIR}/%.cpp,${BLD_DIR}/%.o,$(wildcard ${SRC_DIR}/*.cpp))
 DEP_LIST := $(OBJ_LIST:.o=.d)
 
-WEB_MAKER := make \
-	NAME:=${NAME}.js \
-	BLD_DIR:=build/web \
-	ART_DIR:=artifact/web \
-	COMPILER:=em++ \
-	COMPILER_FLAG_AUXI_LIST:='-sUSE_SDL=2' \
-	LINKER_FLAG_AUXI_LIST:='-sUSE_SDL=2'
+COMPILER_FLAG_LIST := -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror -MMD -MP
+LINKER_FLAG_LIST := #(empty string)
 
-.PHONY: all list_objects clean clean_all
+ifeq (${target}, native)
+.DEFAULT_GOAL := ${ART_DIR}/${name}
+compiler := c++
+COMPILER_FLAG_LIST += -fsanitize=undefined $(shell pkg-config --cflags sdl2)
+LINKER_FLAG_LIST += -fsanitize=undefined $(shell pkg-config --libs sdl2)
+ARTIFACT := ${ART_DIR}/${name}
+else ifeq (${target}, web)
+.DEFAULT_GOAL := ${ART_DIR}/${name}.js
+compiler := em++
+COMPILER_FLAG_LIST += -sUSE_SDL=2
+LINKER_FLAG_LIST += -sUSE_SDL=2
+ARTIFACT := ${ART_DIR}/${name}.js ${ART_DIR}/${name}.wasm
+else
+$(error Unsupported target "${target}")
+endif
 
-WEB_ARTIFACTS := artifact/web/${NAME}.wasm artifact/web/${NAME}.js
-WEBSITE_UPDATE := $(patsubst artifact/web/%,website/generated/%,${WEB_ARTIFACTS})
+.PHONY: all website info clean
+.POSIX: #(More portable?)
 
-${WEBSITE_UPDATE}: ${WEB_ARTIFACTS} | website/generated/
-	cp ${WEB_ARTIFACTS} website/generated/
 
-all: ${.DEFAULT_GOAL} ${WEBSITE_UPDATE}
+ifeq (${target}, native)
 
-${.DEFAULT_GOAL}: ${OBJ_LIST} | ${ART_DIR}
-	${COMPILER} $^ ${LINKER_FLAG_LIST} -o $@
+website:
+	make target=web website
 
-${WEB_ARTIFACTS}:
-	${WEB_MAKER}
+else ifeq (${target}, web)
 
+WEBSITE := $(patsubst ${ART_DIR}/%,${WEB_DIR}/%,${ARTIFACT})
+
+${WEBSITE}: ${ARTIFACT} | ${WEB_DIR}
+	cp ${ARTIFACT} ${WEB_DIR}/
+
+website: ${WEBSITE}
+
+endif
+
+ifeq (${target}, native)
+all: ${.DEFAULT_GOAL} website
+else ifeq (${target}, web)
+all:
+	make target=native all
+endif
+
+info:
+	@printf '%s\n' 'Program Name: ${NAME}'
+	@printf '%s\n' 'Default Goal: ${.DEFAULT_GOAL}'
+	@printf '%s\n' 'Object Files: ${OBJ_LIST}'
+	@printf '%s\n' 'Artifact Directory: ${ART_DIR}'
+	@printf '%s\n' 'Source Directory: ${SRC_DIR}'
+	@printf '%s\n' 'Website: ${WEBSITE}'
+
+# Build program.
+ifeq (${target}, web)
+${ARTIFACT}: ${OBJ_LIST} | ${ART_DIR}
+	${compiler} $^ ${LINKER_FLAG_LIST} -o ${ART_DIR}/${name}.js
+else
+${ARTIFACT}: ${OBJ_LIST} | ${ART_DIR}
+	${compiler} $^ ${LINKER_FLAG_LIST} -o $@
+endif
+
+# Build object files.
 ${OBJ_LIST}: ${BLD_DIR}/%.o: ${SRC_DIR}/%.cpp | ${BLD_DIR}
-	${COMPILER} ${COMPILER_FLAG_LIST} -c $< -o $@
+	${compiler} ${COMPILER_FLAG_LIST} -c $< -o $@
 
-${ART_DIR} ${BLD_DIR} website/generated/: %:
+# Create directories.
+${ART_DIR} ${BLD_DIR} ${WEB_DIR}: %:
 	mkdir --parents $@
 
-list_objects:
-	@printf '%s\n' '${OBJ_LIST}'
-
+# Remove built artifacts.
 clean:
 	rm --force --recursive ${ART_DIR}
 	rm --force --recursive ${BLD_DIR}
-
-clean_all: clean
-	${WEB_MAKER} clean
 
 -include $(DEP_LIST)
