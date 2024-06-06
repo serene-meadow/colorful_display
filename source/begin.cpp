@@ -19,11 +19,12 @@ int main() {
         "Colorful Display",
         SDL_WINDOWPOS_CENTERED/* x position */, SDL_WINDOWPOS_CENTERED/* y position */,
         Sdl::getWindowWidth(), Sdl::getWindowHeight(),
-        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | 0u
     ));
 
     // Should I ask for a V-Sync renderer with the `SDL_RENDERER_PRESENTVSYNC` flag?
     Sdl::renderer = Sdl::check(SDL_CreateRenderer(Sdl::window, -1, 0u));
+    Sdl::check(SDL_SetRenderDrawBlendMode(Sdl::renderer, SDL_BLENDMODE_NONE));
 
     SDL_RendererInfo rendererInformation;
     Sdl::check(SDL_GetRendererInfo(Sdl::renderer, &rendererInformation));
@@ -40,6 +41,7 @@ int main() {
         Sdl::pixelFormat->format, SDL_TEXTUREACCESS_STREAMING,
         Sdl::canvasBufferWidth, Sdl::canvasBufferHeight
     ));
+    Sdl::check(SDL_SetTextureBlendMode(Sdl::canvasBuffer, SDL_BLENDMODE_NONE));
 
     SDL_SetRenderDrawColor(Sdl::renderer, 0u, 0u, 0u, 1u);
 
