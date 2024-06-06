@@ -44,13 +44,7 @@ namespace Project::Utility {
         FloatT const start,
         FloatT const end
     ) {
-        constexpr FloatT zeroPercent{0.0f};
-        constexpr FloatT oneHundredPercent{1.0f};
-
-        assert(percentage >= zeroPercent);
-        assert(percentage <= oneHundredPercent);
-
-        return start * (oneHundredPercent - percentage) + end * percentage;
+        return start * (FloatT{1.0} - percentage) + end * percentage;
     }
 }
 
