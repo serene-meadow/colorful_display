@@ -43,9 +43,16 @@ void Project::SdlContext::mainLoop() {
     static SDL_Event event;
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
+            case SDLK_p:
+                println("This is the color black: ", toString(black));
+                break;
             case SDLK_COMMA:
                 int w, h; SDL_GetWindowSize(window, &w, &h);
-                SDL_Log("cached: (%i, %i), actual: (%i, %i)", windowWidth, windowHeight, w, h);
+                std::cout <<
+                    "title: " << SDL_GetWindowTitle(window) << 
+                    "cached: (" << windowWidth << ", " << windowHeight << "), " <<
+                    "actual: (" << w << ", " << h << ")\n"
+                ;
                 break;
             case SDLK_BACKQUOTE:
                 check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN));
@@ -62,10 +69,10 @@ void Project::SdlContext::mainLoop() {
         } break;
         case SDL_MOUSEMOTION: {
             SDL_GetMouseState(&mouseX, &mouseY);
-            mouseX = Utility::linearInterpolation<float>(
+            mouseX = linearInterpolation<float>(
                 static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
             );
-            mouseY = Utility::linearInterpolation<float>(
+            mouseY = linearInterpolation<float>(
                 static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
             );
         } break;
@@ -90,8 +97,8 @@ void Project::SdlContext::refreshWindow() {
 
     static double percentage{0.0};
     double const deltaPercentage{static_cast<double>(deltaTime) * 0.0008};
-    percentage = Utility::wrapValue(percentage + deltaPercentage, 1.0);
-    mainColor.setHue(Utility::linearInterpolation(percentage, 0.0, 360.0));
+    percentage = wrapValue(percentage + deltaPercentage, 1.0);
+    mainColor.setHue(linearInterpolation(percentage, 0.0, 360.0));
 
     int const minLength{std::min(canvasBufferWidth, canvasBufferHeight)};
     double const colorUnit = 2.0 * 360.0 / static_cast<double>(minLength);

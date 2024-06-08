@@ -2,7 +2,7 @@
 #define CartesianGrid2d_hpp true
 
 #include <vector>
-#include "Utility.hpp"
+#include "project_utility.hpp"
 
 namespace Project { template<typename, typename=std::int_fast32_t> class CartesianGrid2d; }
 
@@ -31,7 +31,7 @@ template<typename T, typename SizeT> class Project::CartesianGrid2d {
     explicit CartesianGrid2d(): CartesianGrid2d(SizeT{0u}, SizeT{0u}) {};
 
     SizeT getFlatIndex(SizeT const row, SizeT const column) const {
-      return Utility::wrapValue(row, rowCount) * colCount + Utility::wrapValue(column, colCount);
+      return wrapValue(row, rowCount) * colCount + wrapValue(column, colCount);
     }
 
     T /***/ &at(SizeT const row, SizeT const column) /***/ { return table[getFlatIndex(row, column)]; }

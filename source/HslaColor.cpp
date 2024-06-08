@@ -45,7 +45,7 @@ SDL_Color Project::makeRgbaColor(
 
 double Project::HslaColor::hueWrap(double const value) {
     static constexpr double fullCycle{360.0};
-    return Utility::wrapValue(value, fullCycle);
+    return wrapValue(value, fullCycle);
 }
 
 double Project::HslaColor::getCyclicHue(
@@ -54,7 +54,7 @@ double Project::HslaColor::getCyclicHue(
     double const depth
 ) {
     assert(hue >= 0.0); assert(hue < 360.0);
-    double const hueOffset{Utility::linearInterpolation(percentage, 0.0, 2.0 * depth)};
+    double const hueOffset{linearInterpolation(percentage, 0.0, 2.0 * depth)};
     if (hueOffset < depth)
         return hueWrap(hue + hueOffset);
     else

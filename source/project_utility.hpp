@@ -1,14 +1,28 @@
-#ifndef Utility_hpp
-#define Utility_hpp true
+#ifndef project_utility_hpp
+#define project_utility_hpp true
 
 #include <cmath>
 #include <cassert>
 #include <type_traits>
+#include <iostream>
 
-namespace Project::Utility {
+namespace Project {
+    // Base case.
+    inline void print() { std::cout << std::flush; }
+
+    // Recursive case.
+    template <typename ArgT, typename... ArgListT>
+    inline void print(ArgT const &arg, ArgListT const &... argList) { std::cout << arg; print(argList...); }
+
+    // Base Case.
+    inline void println() { std::cout << std::endl; /* print new line and flush */ }
+
+    // Recursive Case.
+    template <typename ArgT, typename... ArgListT>
+    inline void println(ArgT const &arg, ArgListT const &... argList) { std::cout << arg; println(argList...); }
 
     template<class T>
-    [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> abs(T const& x) noexcept {
+    [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> absoluteValue(T const x) noexcept {
         return x < T{} ? -x : x;
     }
 

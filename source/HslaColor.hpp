@@ -3,7 +3,7 @@
 
 #include <string>
 #include "SdlContext.hpp"
-#include "Utility.hpp"
+#include "project_utility.hpp"
 
 namespace Project {
   inline constexpr SDL_Color black{0x00, 0x00, 0x00, 0xFF};
@@ -42,10 +42,10 @@ class Project::HslaColor {
     constexpr float getLuminance() const { return luminance; }
     constexpr float getAlpha() const { return alpha; }
 
-    float setHue(float const hueValue) { return hue = Utility::wrapValue(hueValue, 360.0f); }
-    float setSaturation(float const saturationValue) { return saturation = Utility::wrapValue(saturationValue, 1.0f); }
-    float setLuminance(float const luminanceValue) { return luminance = Utility::wrapValue(luminanceValue, 1.0f); }
-    float setAlpha(float const alphaValue) { return alpha = Utility::wrapValue(alphaValue, 1.0f); }
+    float setHue(float const hueValue) { return hue = wrapValue(hueValue, 360.0f); }
+    float setSaturation(float const saturationValue) { return saturation = wrapValue(saturationValue, 1.0f); }
+    float setLuminance(float const luminanceValue) { return luminance = wrapValue(luminanceValue, 1.0f); }
+    float setAlpha(float const alphaValue) { return alpha = wrapValue(alphaValue, 1.0f); }
 
     static double getCyclicHue(
       double const hue,
