@@ -1,0 +1,57 @@
+<!doctype html><html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <title>Colorful Display</title>
+
+    <style>
+        .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+        /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+        canvas.emscripten { border: 0px none; background-color: black; }
+    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script>
+        function showCanvas() {
+            document.getElementById("epilepsy_warning").style.display = "none";
+            // document.getElementById("canvas").style.display = "block";
+        }
+    </script>
+</head>
+
+<body>
+    <div id=epilepsy_warning>
+        <h1>WARNING</h1>
+        <p>This video may potentially trigger seizures for people with photosensitive epilepsy. Viewer discretion is advised.</p>
+        <button onclick="showCanvas()">I understand; view video.</button>
+    </div>
+
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+    <script type='text/javascript'>
+        var Module = {
+        print: (function() {
+            return (...args) => {
+            var text = args.join(' ');
+            console.log(text);
+            };
+        })(),
+        canvas: (() => {
+            var canvas = document.getElementById('canvas');
+
+            // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+            // application robust, you may want to override this behavior before shipping!
+            // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+            canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+            return canvas;
+        })()
+        };
+    </script>
+
+    <!-- <script async src="compiled/colorful_display.js"></script> -->
+</body>
+
+</html>
