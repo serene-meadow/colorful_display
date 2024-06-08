@@ -1,12 +1,9 @@
 html {
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
 
     background-color: #AEC6CF;
-    
-    display: flex;
+
     align-items: center;
     justify-content: center;
     
@@ -29,7 +26,7 @@ html {
 }
 
 #epilepsy_warning p {
-    font-size: 16px;
+    font-size: 22px;
     margin-bottom: 20px;
 }
 
@@ -46,9 +43,4 @@ html {
 
 #epilepsy_warning button:hover {
     background-color: #cc0000;
-}
-
-/* The JavaScript that loads the WebAssembly expects the ID to be "canvas" exactly. */
-#canvas {
-    display: block;
 }
