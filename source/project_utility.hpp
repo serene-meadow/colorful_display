@@ -5,26 +5,48 @@
 #include <cassert>
 #include <type_traits>
 #include <iostream>
+#include <sstream>
 
-namespace Project {
-    // Base case.
+namespace Project/* String */ {
     inline void print() { std::cout << std::flush; }
 
-    // Recursive case.
-    template <typename ArgT, typename... ArgListT>
-    inline void print(ArgT const &arg, ArgListT const &... argList) { std::cout << arg; print(argList...); }
+    template <typename T, typename... Params>
+    inline void print(T const &arg, Params const &... params) { std::cout << arg; print(params...); }
 
-    // Base Case.
     inline void println() { std::cout << std::endl; /* print new line and flush */ }
 
-    // Recursive Case.
-    template <typename ArgT, typename... ArgListT>
-    inline void println(ArgT const &arg, ArgListT const &... argList) { std::cout << arg; println(argList...); }
+    template <typename T, typename... Params>
+    inline void println(T const &arg, Params const &... params) { std::cout << arg; println(params...); }
 
-    template<class T>
+    template<typename T>
     [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> absoluteValue(T const x) noexcept {
-        return x < T{} ? -x : x;
+        return x < T{0} ? -x : x;
     }
+
+    template <typename DelimeterT>
+    inline std::ostringstream &joinToStream(std::ostringstream &stream, DelimeterT const &) { return stream; }
+
+    template<typename DelimeterT, typename T, typename... Params>
+    inline std::ostringstream &joinToStream(std::ostringstream &stream, DelimeterT const &delimeter, T const &arg, Params const &... params) {
+        stream << arg;
+        if constexpr (sizeof...(params) > 0u) stream << delimeter;
+        return joinToStream(stream, delimeter, params...);
+    }
+
+    template<typename DelimeterT, typename... Params>
+    inline std::string stringJoin(DelimeterT const &delimeter, Params const &... params) {
+        std::ostringstream stream;
+        stream << std::boolalpha;
+        joinToStream(stream, delimeter, params...);
+        return stream.str();
+    }
+
+    template<char delimeter=',', typename... Params>
+    inline std::string charJoin(Params const &... params) { return stringJoin(delimeter, params...); }
+
+}
+
+namespace Project/* Math */ {
 
     template <typename IntT>
     constexpr std::enable_if_t<std::is_integral_v<IntT>, IntT> wrapValue(IntT value, IntT const upperBound) {
