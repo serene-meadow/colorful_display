@@ -41,11 +41,7 @@
           canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 
           return canvas;
-        })(),
-        totalDependencies: 0,
-        monitorRunDependencies: (left) => {
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-        }
+        })()
       };
     </script>
     <!-- {{{ SCRIPT }}} -->
