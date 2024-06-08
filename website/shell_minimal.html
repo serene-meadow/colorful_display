@@ -16,13 +16,9 @@
   </head>
 
   <body>
-    <div class="emscripten">
-      <progress value="0" max="100" id="progress" hidden=1></progress>  
-    </div>
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
-      var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
 
       var Module = {
