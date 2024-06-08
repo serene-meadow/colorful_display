@@ -19,7 +19,6 @@
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
-      var spinnerElement = document.getElementById('spinner');
 
       var Module = {
         print: (function() {
@@ -53,9 +52,6 @@
         monitorRunDependencies: (left) => {
           this.totalDependencies = Math.max(this.totalDependencies, left);
         }
-      };
-      window.onerror = () => {
-        spinnerElement.style.display = 'none';
       };
     </script>
     <!-- {{{ SCRIPT }}} -->
