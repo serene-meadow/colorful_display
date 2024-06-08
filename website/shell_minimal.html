@@ -16,16 +16,10 @@
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
-
       var Module = {
         print: (function() {
           return (...args) => {
             var text = args.join(' ');
-            // These replacements are necessary if you render to raw HTML
-            //text = text.replace(/&/g, "&amp;");
-            //text = text.replace(/</g, "&lt;");
-            //text = text.replace(/>/g, "&gt;");
-            //text = text.replace('\n', '<br>', 'g');
             console.log(text);
           };
         })(),
@@ -41,6 +35,7 @@
         })()
       };
     </script>
+
     <!-- {{{ SCRIPT }}} -->
     <!-- <script async src="generated/colorful_display.js"></script> -->
   </body>
