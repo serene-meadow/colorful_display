@@ -13,6 +13,7 @@ int main() {
 
     Sdl::check(SDL_Init(SDL_INIT_VIDEO));
 
+    // Register an exit handler to clean up SDL stuff.
     std::atexit/* 1/32 */(&Sdl::exitHandler);
 
     Sdl::window = Sdl::check(SDL_CreateWindow(
