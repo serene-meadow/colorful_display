@@ -43,30 +43,82 @@ void Project::SdlContext::mainLoop() {
     static SDL_Event event;
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
-            case SDLK_p:
-                println("This is the color black: ", toString(black));
-                break;
             case SDLK_COMMA:
+                println("title: ", SDL_GetWindowTitle(window));
+
+                println("cached window size: ", charJoin(windowWidth, windowHeight));
+
                 int w, h; SDL_GetWindowSize(window, &w, &h);
-                std::cout <<
-                    "title: " << SDL_GetWindowTitle(window) << 
-                    "cached: (" << windowWidth << ", " << windowHeight << "), " <<
-                    "actual: (" << w << ", " << h << ")\n"
-                ;
+                println("actual window size: ", charJoin(w, h));
+
+                int windowX, windowY; SDL_GetWindowPosition(window, &windowX, &windowY);
+                println("window position: ", charJoin(windowX, windowY));
+
+                float windowOpacity; check(SDL_GetWindowOpacity(window, &windowOpacity));
+                println("window opacity: ", windowOpacity);
+
                 break;
             case SDLK_BACKQUOTE:
+                // "Proper" fullscreen may not be supported in all browsers.
+                #ifdef __EMSCRIPTEN__
+                check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP /* "fake" fullscreen */));
+                #else
                 check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN));
+                #endif
                 break;
             case SDLK_ESCAPE:
                 check(SDL_SetWindowFullscreen(window, 0u));
                 break;
         } break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
-            case SDL_WINDOWEVENT_RESIZED:
+            case SDL_WINDOWEVENT_SHOWN:
+                println("Window has been shown");
+                break;
+            case SDL_WINDOWEVENT_HIDDEN:
+                println("Window has been hidden.");
+                break;
+            case SDL_WINDOWEVENT_EXPOSED:
+                println("Window has been exposed and should be redrawn");
+                break;
+            case SDL_WINDOWEVENT_MOVED:
+                println("Window has been moved to (", charJoin(event.window.data1, event.window.data2), ")");
+                break;
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
+                println("Window has been resized: ", event.window.data1, ',', event.window.data2);
                 windowWidth = event.window.data1;
                 windowHeight = event.window.data2;
                 break;
+            case SDL_WINDOWEVENT_RESIZED/* Resize Request is External to the Program */:
+                println("Something external to the program requested for the window to be resized.");
+                break;
+            case SDL_WINDOWEVENT_MINIMIZED:       println("Window has been minimized"); break;
+            case SDL_WINDOWEVENT_MAXIMIZED:       println("Window has been maximized"); break;
+            case SDL_WINDOWEVENT_RESTORED:        println("Window has been restored to normal size and position"); break;
+            case SDL_WINDOWEVENT_ENTER:           println("Window has gained mouse focus"); break;
+            case SDL_WINDOWEVENT_LEAVE:           println("Window has lost mouse focus"); break;
+            case SDL_WINDOWEVENT_FOCUS_GAINED:    println("Window has gained keyboard focus"); break;
+            case SDL_WINDOWEVENT_FOCUS_LOST:      println("Window has lost keyboard focus"); break;
+            case SDL_WINDOWEVENT_CLOSE:           println("The window manager requests that the window be closed"); break;
+            case SDL_WINDOWEVENT_TAKE_FOCUS:      println("Window is being offered a focus (should SetWindowInputFocus() on itself or a subwindow, or ignore)"); break;
+            case SDL_WINDOWEVENT_HIT_TEST:        println("Window had a hit test that wasn't SDL_HITTEST_NORMAL."); break;
+            case SDL_WINDOWEVENT_ICCPROF_CHANGED: println("The ICC profile of the window's display has changed."); break;
+            case SDL_WINDOWEVENT_DISPLAY_CHANGED: println("Window has been moved to display data1."); break;
         } break;
+        // case SDL_STOP
+        case SDL_MOUSEBUTTONDOWN: {
+            switch (event.button.button) {
+                case SDL_BUTTON_MIDDLE:
+                    print("Mouse middle: ");
+                    break;
+                case SDL_BUTTON_RIGHT:
+                    print("Mouse  right: ");
+                    break;
+                case SDL_BUTTON_LEFT:
+                    print("Mouse   left: ");
+                    break;
+            }
+            println(mouseX, ',', mouseY);
+        }; break;
         case SDL_MOUSEMOTION: {
             SDL_GetMouseState(&mouseX, &mouseY);
             mouseX = linearInterpolation<float>(
