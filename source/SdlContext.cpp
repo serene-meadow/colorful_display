@@ -61,7 +61,7 @@ void Project::SdlContext::mainLoop() {
             case SDLK_BACKQUOTE:
                 // "Proper" fullscreen may not be supported in all browsers.
                 #ifdef __EMSCRIPTEN__
-                check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP /* "fake" fullscreen */));
+                check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP/* "fake" fullscreen */));
                 #else
                 check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN));
                 #endif
