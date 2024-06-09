@@ -1,4 +1,5 @@
-<!doctype html><html lang="en-us">
+<!doctype html>
+<html lang="en-us">
 
 <head>
     <meta charset="utf-8">
@@ -16,14 +17,25 @@
     <script>
         function showCanvas() {
             document.getElementById("epilepsy_warning").style.display = "none";
-            // Module.canvas.style.height = "100%";
-            // Module.canvas.style.width = "100%";
-            // Module.canvas.style.display = "block";
+            
+            Module.canvas.style.display = "block";
+            Module.canvas.style.height = "100%";
+            Module.canvas.style.width = "100%";
+
+            let script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "compiled/colorful_display.js";
+            document.head.appendChild(script);
+
+            script.onload = function() {
+                console.log("Program loaded.");
+            };
         }
     </script>
 </head>
 
 <body>
+
     <div id=epilepsy_warning>
         <h1>WARNING</h1>
         <p>This video may potentially trigger seizures for people with photosensitive epilepsy.</p>
@@ -31,27 +43,22 @@
         <button onclick="showCanvas()">I understand; view video.</button>
     </div>
 
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <canvas class="emscripten" id="canvas" style="display: none;" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
         var Module = {
             print: (function() {
                 return (...args) => {
-                var text = args.join(' ');
+                let text = args.join(' ');
                 console.log(text);
                 };
             })(),
             printErr: function(text) {
                 if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                if (0) { // XXX disabled for safety typeof dump == 'function') {
-                    dump(text + '\n'); // fast, straight to the real console
-                } else {
-                    console.error(text);
-                }
+                console.error(text);
             },
             canvas: (() => {
-                var canvas = document.getElementById('canvas');
-                // canvas.style.display = "none"
+                let canvas = document.getElementById('canvas');
 
                 // As a default initial behavior, pop up an alert when webgl context is lost. To make your
                 // application robust, you may want to override this behavior before shipping!
@@ -63,7 +70,6 @@
         };
     </script>
 
-    <!-- <script async src="compiled/colorful_display.js"></script> -->
 </body>
 
 </html>
