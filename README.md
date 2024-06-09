@@ -12,15 +12,15 @@ The purpose of this repository is to host a webpage that displays the graphical 
 
 This project uses a [`Makefile`](https://www.gnu.org/software/make/manual/make.html) to build.
 
-Since this repository is mainly to build a single webpage, I didn't feel the need to add options for building on other platforms besides Linux and [WebAssembly](https://webassembly.org/).
+Since this repository is mainly for a single webpage, I didn't feel the need to add options for building for other platforms besides Linux and [WebAssembly (WASM)](https://webassembly.org/).
 
-When building either for the native target or the web target, an `artifact` directory and a `build` directory are created. The `build` directory is for object files and dependency files. The compiled program is put into the `artifact` directory.
+When building either for the native target or the website target, an `artifact` directory and a `build` directory are created. The `build` directory is for object files and dependency files. The compiled program is put into the `artifact` directory.
 
 
 When compiling for the web, another additional directory `website/compiled` is created if it doesn't already exist. The WebAssembly program is copied to here so that the webpage can use it.
 
 ```sh
-# This command compiles both the native target and the web target.
+# Compiles both the native target and the website target.
 make all
 ```
 
@@ -28,26 +28,27 @@ make all
 
 The default target of the `make` command is the native program.
 ```sh
-# Compile natively.
+# Compiles natively.
 make
 ```
-The program can be found at `artifact/native/colorful_display`.
+Once compiled, the program can be found at `artifact/native/colorful_display`.
 
 By default, the `Makefile` will use whatever C++ compiler the `c++` command refers to. The C++ compiler can be specified as an argument to the `make` command.
 ```sh
-# Compile natively and use the Clang C++ compiler.
+# Compiles natively and uses the Clang C++ compiler.
 make compiler=clang++
 ```
 
 This following command removes the build files for the native target created by the `make` command.
 ```sh
+# Removes the `artifact` directory and the `build` directoy.
 make clean
 ```
 
 ### Building for the Web
 
 ```sh
-# Compile the WebAssembly program into the website's directory.
+# Compiles the WebAssembly program into the website's directory.
 make website
 ```
 
