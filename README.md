@@ -1,8 +1,8 @@
-# Colorful Display
+# [Colorful Display in a Webpage](https://adrian-javid.github.io/colorful_display/)
 
 This is a program that displays animated color gradients.
 
-The purpose of this repository is to host a webpage that displays the graphical output of the program.
+The purpose of this repository is to host a [webpage](https://adrian-javid.github.io/colorful_display/) that displays the graphical output of the program.
 
 ## Project File Structure
 * `source/` contains the C++ code for the graphical program.
