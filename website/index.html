@@ -16,7 +16,9 @@
     <script>
         function showCanvas() {
             document.getElementById("epilepsy_warning").style.display = "none";
-            // document.getElementById("canvas").style.display = "block";
+            // Module.canvas.style.height = "100%";
+            // Module.canvas.style.width = "100%";
+            // Module.canvas.style.display = "block";
         }
     </script>
 </head>
@@ -39,8 +41,17 @@
                 console.log(text);
                 };
             })(),
+            printErr: function(text) {
+                if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                if (0) { // XXX disabled for safety typeof dump == 'function') {
+                    dump(text + '\n'); // fast, straight to the real console
+                } else {
+                    console.error(text);
+                }
+            },
             canvas: (() => {
                 var canvas = document.getElementById('canvas');
+                // canvas.style.display = "none"
 
                 // As a default initial behavior, pop up an alert when webgl context is lost. To make your
                 // application robust, you may want to override this behavior before shipping!
