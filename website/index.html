@@ -18,6 +18,7 @@
         function showCanvas() {
             document.getElementById("epilepsy_warning").style.display = "none";
             
+            Module.canvas.style.opacity = "0%";
             Module.canvas.style.display = "block";
             Module.canvas.style.height = "100%";
             Module.canvas.style.width = "100%";
@@ -29,6 +30,7 @@
 
             script.onload = function() {
                 console.log("Program loaded.");
+                Module.canvas.classList.add("fade_in_animation");
             };
         }
     </script>
