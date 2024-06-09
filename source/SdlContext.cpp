@@ -57,13 +57,16 @@ void Project::SdlContext::mainLoop() {
                 float windowOpacity; check(SDL_GetWindowOpacity(window, &windowOpacity));
                 println("window opacity: ", windowOpacity);
 
+                SDL_DisplayMode displayMode; check(SDL_GetWindowDisplayMode(window, &displayMode));
+                println("Display mode: ", displayMode.w, ',', displayMode.h);
+
                 break;
             case SDLK_BACKQUOTE:
-                // "Proper" fullscreen may not be supported in all browsers.
+                // "Real" fullscreen is buggy in the browser.
                 #ifdef __EMSCRIPTEN__
                 check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP/* "fake" fullscreen */));
                 #else
-                check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN));
+                check(SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN/* "real" fullscreen */));
                 #endif
                 break;
             case SDLK_ESCAPE:
