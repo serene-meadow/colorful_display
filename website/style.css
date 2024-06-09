@@ -1,12 +1,15 @@
-html {
+html, body {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+}
 
-    background-color: #AEC6CF;
-
+body {
+    display: flex;
     align-items: center;
     justify-content: center;
-    
+    background-color: #AEC6CF;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
 }
@@ -16,8 +19,11 @@ html {
     background-color: #ffcccc;
     border: 1px solid #ff0000;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 5%;
+    width: 53%;
+    border-radius: 25px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    display: block;
 }
 
 #epilepsy_warning h1 {
