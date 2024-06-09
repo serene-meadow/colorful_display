@@ -46,7 +46,6 @@ int main() {
     Sdl::check(SDL_SetTextureBlendMode(Sdl::canvasBuffer, SDL_BLENDMODE_NONE));
 
     #ifdef __EMSCRIPTEN__
-    Sdl::refreshCachedWindowSize();
     emscripten_set_main_loop(&Sdl::mainLoop, -1, true);
     #else
     while (true) Sdl::mainLoop();
