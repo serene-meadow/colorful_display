@@ -8,18 +8,19 @@
 #include <sstream>
 
 namespace Project/* String */ {
-    inline void print() { std::cout << std::flush; }
 
-    template <typename T, typename... Params>
-    inline void print(T const &arg, Params const &... params) { std::cout << arg; print(params...); }
+    template <typename... Params>
+    inline void print(Params &&... params) {
+        (std::cout << ... << params) << std::flush;
+    }
 
-    inline void println() { std::cout << std::endl; /* print new line and flush */ }
-
-    template <typename T, typename... Params>
-    inline void println(T const &arg, Params const &... params) { std::cout << arg; println(params...); }
+    template <typename... Params>
+    inline void println(Params &&... params) {
+        (std::cout << ... << params) << std::endl/* print new line and flush */;
+    }
 
     template<typename T>
-    [[nodiscard]] constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> absoluteValue(T const x) noexcept {
+    [[nodiscard]] inline constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> absoluteValue(T const x) noexcept {
         return x < T{0} ? -x : x;
     }
 
