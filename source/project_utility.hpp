@@ -83,6 +83,8 @@ namespace Project/* Math */ {
     ) {
         return start * (FloatT{1.0} - percentage) + end * percentage;
     }
+
+    inline constexpr double pi{3.141592653589793115997963468544185161590576171875};
 }
 
 #endif
