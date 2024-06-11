@@ -1,6 +1,7 @@
 #include "SdlContext.hpp"
 #include "CartesianGrid2d.hpp"
 #include "HslaColor.hpp"
+#include <algorithm>
 
 namespace Project::SdlContext {
     SDL_Window *window = nullptr;
@@ -150,22 +151,16 @@ void Project::SdlContext::mainLoop() {
 void Project::SdlContext::refreshWindow() {
     static HslaColor mainColor;
 
-    static double percentage{0.0};
-    double const deltaPercentage{static_cast<double>(deltaTime) * 0.0008};
-    percentage = wrapValue(percentage + deltaPercentage, 1.0);
-    mainColor.setHue(linearInterpolation(percentage, 0.0, 360.0));
+    static double huePercentage{0.0};
+    huePercentage = wrapValue(huePercentage + static_cast<double>(deltaTime) * (0.0008), 1.0);
+
+    static double sourceFunctionPercentage{0.0};
+    sourceFunctionPercentage = wrapValue(sourceFunctionPercentage + static_cast<double>(deltaTime) * (0.000025), 1.0);
+
+    mainColor.setHue(linearInterpolation(huePercentage, 0.0, 360.0));
 
     int const minLength{std::min(canvasBufferWidth, canvasBufferHeight)};
     double const colorUnit = 2.0 * 360.0 / static_cast<double>(minLength);
-
-    std::vector<SDL_FPoint> const sourcePointList = {
-        // SDL_FPoint{windowWidth / 2.0f, windowHeight / 2.0f},
-        SDL_FPoint{0.0f, 0.0f},
-        // SDL_FPoint{windowWidth - 1.0f, 0.0f},
-        // SDL_FPoint{0.0f, windowHeight - 1.0f},
-        SDL_FPoint{static_cast<float>(mouseX), static_cast<float>(mouseY)},
-        SDL_FPoint{canvasBufferWidth - 1.0f, canvasBufferHeight - 1.0f},
-    };
 
     void *pixelPointer;
     int pitch;
@@ -178,11 +173,51 @@ void Project::SdlContext::refreshWindow() {
 
     Uint32 *const pixelArray = static_cast<Uint32 *>(pixelPointer);
 
+    [[maybe_unused]]
+    static constexpr auto outlineBox = [](float const percentage) constexpr -> SDL_FPoint {
+        /****/ if (percentage <= .25) {
+            return {linearInterpolation<float>(percentage * 4.0, 0.0f, canvasBufferWidth), 0.0};
+        } else if (percentage <= .50) {
+            return {canvasBufferWidth, linearInterpolation<float>((percentage - .25) * 4.0, 0.0f, canvasBufferHeight)};
+        } else if (percentage <= .75) {
+            return {linearInterpolation<float>((percentage - .50) * 4.0, canvasBufferWidth, 0.0f), canvasBufferHeight};
+        } else {
+            return {0.0, linearInterpolation<float>((percentage - .75) * 4.0, canvasBufferHeight, 0.0f)};
+        }
+    };
+
+    static constexpr std::array sourceFunctionList{
+        +[](float const percentage) -> SDL_FPoint {
+            static_cast<void>(percentage);
+            return {static_cast<float>(mouseX), static_cast<float>(mouseY)};
+        },
+        // +[](float const percentage) constexpr -> SDL_FPoint {
+        //     float const t{linearInterpolation<float>(percentage, 0.0, 2.0 * pi)};
+        //     return {
+        //         /* x */ canvasBufferWidth * (std::sin(3.0f * t) + 1.0f) / 2.0f,
+        //         /* y */ canvasBufferHeight * (std::sin(2.0f * t) + 1.0f) / 2.0f
+        //     };
+        // },
+        +outlineBox,
+        +[](float const percentage) constexpr -> SDL_FPoint {
+            return outlineBox(wrapValue(percentage + .50, 1.0));
+        },
+    };
+
+    static std::array<SDL_FPoint, sourceFunctionList.size()> sourcePointList{};
+    std::transform(
+        sourceFunctionList.begin(), sourceFunctionList.end(),
+        sourcePointList.begin(),
+        [](decltype(sourceFunctionList)::value_type const sourceFunction) constexpr -> SDL_FPoint {
+            return sourceFunction(sourceFunctionPercentage);
+        }
+    );
+
     for (int y{0}; y < canvasBufferHeight; ++y) {
         for (int x{0}; x < canvasBufferWidth; ++x) {
             HslaColor hslaPixel(mainColor);
 
-            std::uint_fast8_t count{0};
+            std::uint_fast8_t count{0u};
             for (auto const &point : sourcePointList) {
                 double const distance{std::sqrt(
                     std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0)
@@ -190,8 +225,8 @@ void Project::SdlContext::refreshWindow() {
 
                 double const colorOffset{colorUnit * distance};
 
-                if (false or count++ % 2u == 0u) hslaPixel.setHue(hslaPixel.getHue() - colorOffset);
-                else hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
+                if (true and count++ == 0u) hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
+                else hslaPixel.setHue(hslaPixel.getHue() - colorOffset);
             }
 
             SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
