@@ -12,6 +12,8 @@ namespace Project::SdlContext {
     static Uint64 deltaTime{0u};
     static int windowWidth{430}, windowHeight{430};
     static int mouseX{0}, mouseY{0};
+
+    static std::unordered_map<SDL_FingerID, SDL_FPoint> fingerMap;
 }
 
 void Project::SdlContext::refreshCachedWindowSize() {
@@ -74,6 +76,29 @@ void Project::SdlContext::mainLoop() {
                 check(SDL_SetWindowFullscreen(window, 0u));
                 break;
         } break;
+        case SDL_MOUSEBUTTONDOWN: {
+            switch (event.button.button) {
+                case SDL_BUTTON_MIDDLE:
+                    print("Mouse middle: ");
+                    break;
+                case SDL_BUTTON_RIGHT:
+                    print("Mouse  right: ");
+                    break;
+                case SDL_BUTTON_LEFT:
+                    print("Mouse   left: ");
+                    break;
+            }
+            println(mouseX, ',', mouseY);
+        }; break;
+        case SDL_MOUSEMOTION: {
+            SDL_GetMouseState(&mouseX, &mouseY);
+            mouseX = linearInterpolation<float>(
+                static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
+            );
+            mouseY = linearInterpolation<float>(
+                static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
+            );
+        } break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
             case SDL_WINDOWEVENT_SHOWN:
                 println("Window has been shown");
@@ -107,30 +132,6 @@ void Project::SdlContext::mainLoop() {
             case SDL_WINDOWEVENT_HIT_TEST:        println("Window had a hit test that wasn't SDL_HITTEST_NORMAL."); break;
             case SDL_WINDOWEVENT_ICCPROF_CHANGED: println("The ICC profile of the window's display has changed."); break;
             case SDL_WINDOWEVENT_DISPLAY_CHANGED: println("Window has been moved to display data1."); break;
-        } break;
-        // case SDL_STOP
-        case SDL_MOUSEBUTTONDOWN: {
-            switch (event.button.button) {
-                case SDL_BUTTON_MIDDLE:
-                    print("Mouse middle: ");
-                    break;
-                case SDL_BUTTON_RIGHT:
-                    print("Mouse  right: ");
-                    break;
-                case SDL_BUTTON_LEFT:
-                    print("Mouse   left: ");
-                    break;
-            }
-            println(mouseX, ',', mouseY);
-        }; break;
-        case SDL_MOUSEMOTION: {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            mouseX = linearInterpolation<float>(
-                static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
-            );
-            mouseY = linearInterpolation<float>(
-                static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
-            );
         } break;
         case SDL_QUIT:
             std::exit(EXIT_SUCCESS);
