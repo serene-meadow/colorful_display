@@ -2,6 +2,7 @@
 .*
 !.gitignore
 !.gitkeep
+!.github
 
 # Directory with the resulting program.
 artifact/
