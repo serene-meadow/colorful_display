@@ -11,7 +11,7 @@
 int main() {
     namespace Sdl = Project::SdlContext;
 
-    Sdl::check(SDL_Init(SDL_INIT_VIDEO));
+    Sdl::check(SDL_Init(SDL_INIT_VIDEO /* `SDL_INIT_VIDEO` implies `SDL_INIT_EVENTS` */));
 
     // Register an exit handler to clean up SDL stuff.
     std::atexit/* 1/32 */(&Sdl::exitHandler);
