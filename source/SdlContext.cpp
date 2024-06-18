@@ -1,7 +1,7 @@
 #include "SdlContext.hpp"
-#include "CartesianGrid2d.hpp"
 #include "HslaColor.hpp"
 #include <algorithm>
+#include <optional>
 
 namespace Project::SdlContext {
     SDL_Window *window = nullptr;
@@ -11,9 +11,14 @@ namespace Project::SdlContext {
 
     static Uint64 deltaTime{0u};
     static int windowWidth{430}, windowHeight{430};
-    static int mouseX{0}, mouseY{0};
 
-    static std::unordered_map<SDL_FingerID, SDL_FPoint> fingerMap;
+    /*
+        This point represents the position on the canvas buffer, not the actual displayed window.
+        If this is null, then the user is not pressing their left mouse button.
+    */
+    static std::optional<SDL_FPoint> mouse = std::nullopt;
+
+    static std::unordered_map<SDL_FingerID, std::optional<SDL_FPoint>> fingerMap;
 }
 
 void Project::SdlContext::refreshCachedWindowSize() {
@@ -42,8 +47,11 @@ void Project::SdlContext::mainLoop() {
     // Get the change in time.
     deltaTime = currentTime - previousTime;
 
-    // Handle events.
     static SDL_Event event;
+    // Handle events.
+    /*
+        This is the great switch statement of awesomeness.
+    */
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
             case SDLK_COMMA:
@@ -76,29 +84,43 @@ void Project::SdlContext::mainLoop() {
                 check(SDL_SetWindowFullscreen(window, 0u));
                 break;
         } break;
-        case SDL_MOUSEBUTTONDOWN: {
-            switch (event.button.button) {
-                case SDL_BUTTON_MIDDLE:
-                    print("Mouse middle: ");
-                    break;
-                case SDL_BUTTON_RIGHT:
-                    print("Mouse  right: ");
-                    break;
-                case SDL_BUTTON_LEFT:
-                    print("Mouse   left: ");
-                    break;
-            }
-            println(mouseX, ',', mouseY);
+        case SDL_MOUSEBUTTONDOWN: switch (event.button.button) {
+            case SDL_BUTTON_LEFT:
+                mouse = SDL_FPoint{
+                    linearInterpolation<float>(
+                        static_cast<float>(event.button.x) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
+                    ),
+                    linearInterpolation<float>(
+                        static_cast<float>(event.button.y) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
+                    )
+                };
+                break;
+            case SDL_BUTTON_MIDDLE: break;
+            case SDL_BUTTON_RIGHT: break;
         }; break;
-        case SDL_MOUSEMOTION: {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            mouseX = linearInterpolation<float>(
-                static_cast<float>(mouseX) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
-            );
-            mouseY = linearInterpolation<float>(
-                static_cast<float>(mouseY) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
-            );
+        case SDL_MOUSEMOTION:
+            if (mouse.has_value()) mouse = {
+                linearInterpolation<float>(
+                    static_cast<float>(event.motion.x) / static_cast<float>(windowWidth), 0.0f, canvasBufferWidth
+                ),
+                linearInterpolation<float>(
+                    static_cast<float>(event.motion.y) / static_cast<float>(windowHeight), 0.0f, canvasBufferHeight
+                )
+            };
+            break;
+        case SDL_MOUSEBUTTONUP: switch (event.button.button) {
+            case SDL_BUTTON_LEFT:
+                mouse = std::nullopt;
+                break;
+            case SDL_BUTTON_MIDDLE: break;
+            case SDL_BUTTON_RIGHT: break;
         } break;
+        case SDL_FINGERDOWN: case SDL_FINGERMOTION:
+            fingerMap[event.tfinger.fingerId] = {event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight};
+            break;
+        case SDL_FINGERUP:
+            fingerMap[event.tfinger.fingerId] = std::nullopt;
+            break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
             case SDL_WINDOWEVENT_SHOWN:
                 println("Window has been shown");
@@ -160,8 +182,8 @@ void Project::SdlContext::refreshWindow() {
 
     mainColor.setHue(linearInterpolation(huePercentage, 0.0, 360.0));
 
-    int const minLength{std::min(canvasBufferWidth, canvasBufferHeight)};
-    double const colorUnit = 2.0 * 360.0 / static_cast<double>(minLength);
+    static constexpr int const minLength{std::min(canvasBufferWidth, canvasBufferHeight)};
+    static constexpr double const hueUnit{2.0 * 360.0 / static_cast<double>(minLength)};
 
     void *pixelPointer;
     int pitch;
@@ -175,7 +197,7 @@ void Project::SdlContext::refreshWindow() {
     Uint32 *const pixelArray = static_cast<Uint32 *>(pixelPointer);
 
     [[maybe_unused]]
-    static constexpr auto outlineBox = [](float const percentage) constexpr -> SDL_FPoint {
+    static constexpr auto outlineCanvas = [](float const percentage) constexpr -> SDL_FPoint {
         /****/ if (percentage <= .25) {
             return {linearInterpolation<float>(percentage * 4.0, 0.0f, canvasBufferWidth), 0.0};
         } else if (percentage <= .50) {
@@ -188,10 +210,6 @@ void Project::SdlContext::refreshWindow() {
     };
 
     static constexpr std::array sourceFunctionList{
-        +[](float const percentage) -> SDL_FPoint {
-            static_cast<void>(percentage);
-            return {static_cast<float>(mouseX), static_cast<float>(mouseY)};
-        },
         // +[](float const percentage) constexpr -> SDL_FPoint {
         //     float const t{linearInterpolation<float>(percentage, 0.0, 2.0 * pi)};
         //     return {
@@ -199,10 +217,10 @@ void Project::SdlContext::refreshWindow() {
         //         /* y */ canvasBufferHeight * (std::sin(2.0f * t) + 1.0f) / 2.0f
         //     };
         // },
-        +outlineBox,
-        +[](float const percentage) constexpr -> SDL_FPoint {
-            return outlineBox(wrapValue(percentage + .50, 1.0));
-        },
+        +outlineCanvas,
+        // +[](float const percentage) constexpr -> SDL_FPoint {
+        //     return outlineCanvas(wrapValue(percentage + .50, 1.0));
+        // },
     };
 
     static std::array<SDL_FPoint, sourceFunctionList.size()> sourcePointList{};
@@ -218,17 +236,32 @@ void Project::SdlContext::refreshWindow() {
         for (int x{0}; x < canvasBufferWidth; ++x) {
             HslaColor hslaPixel(mainColor);
 
-            std::uint_fast8_t count{0u};
-            for (auto const &point : sourcePointList) {
-                double const distance{std::sqrt(
-                    std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0)
-                )};
+            enum struct PointType : std::uint_least8_t { sink, source, };
+            auto const processPoint = [x, y, &hslaPixel](
+                SDL_FPoint const &point,
+                PointType const pointType
+            ) constexpr -> void {
+                double const distance{
+                    std::sqrt(std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0))
+                };
 
-                double const colorOffset{colorUnit * distance};
+                double const hueOffset{hueUnit * distance};
 
-                if (true and count++ == 0u) hslaPixel.setHue(hslaPixel.getHue() + colorOffset);
-                else hslaPixel.setHue(hslaPixel.getHue() - colorOffset);
-            }
+                switch (pointType) {
+                    case PointType::source:
+                        hslaPixel.setHue(hslaPixel.getHue() - hueOffset);
+                        break;
+                    case PointType::sink:
+                        hslaPixel.setHue(hslaPixel.getHue() + hueOffset);
+                        break;
+                    default:
+                        throw pointType;
+                }
+            };
+
+            for (auto const &point : sourcePointList) processPoint(point, PointType::source);
+
+            if (mouse.has_value()) processPoint(*mouse, PointType::sink);
 
             SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
 
