@@ -263,10 +263,10 @@ void Project::SdlContext::refreshWindow() {
 
             if (mouse.has_value() and fingerMap.size() == 0u) processPoint(*mouse, PointType::sink);
 
-            for (auto const &[identifier, point] : fingerMap) processPoint(point, PointType::sink);
+            std::uint_fast8_t count{static_cast<std::uint_fast8_t>(fingerMap.size())};
+            for (auto const &[identifier, point] : fingerMap) processPoint(point, (count++ % 2 == 0) ? PointType::sink : PointType::source);
 
-            std::uint_fast8_t count{0u};
-            for (auto const &point : sourcePointList) processPoint(point, (count++ % 2 == 0) ? PointType::source : PointType::sink);
+            if (fingerMap.size() == 0u) for (auto const &point : sourcePointList) processPoint(point, PointType::source);
 
             SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
 
