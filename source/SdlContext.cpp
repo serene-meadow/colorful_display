@@ -69,9 +69,6 @@ void Project::SdlContext::mainLoop() {
                 float windowOpacity; check(SDL_GetWindowOpacity(window, &windowOpacity));
                 println("window opacity: ", windowOpacity);
 
-                SDL_DisplayMode displayMode; check(SDL_GetWindowDisplayMode(window, &displayMode));
-                println("Display mode: ", displayMode.w, ',', displayMode.h);
-
                 println("Finger count: ", fingerMap.size());
 
                 println();
@@ -264,7 +261,7 @@ void Project::SdlContext::refreshWindow() {
                 }
             };
 
-            if (mouse.has_value()) processPoint(*mouse, PointType::sink);
+            if (mouse.has_value() and fingerMap.size() == 0u) processPoint(*mouse, PointType::sink);
 
             for (auto const &[identifier, point] : fingerMap) processPoint(point, PointType::sink);
 
