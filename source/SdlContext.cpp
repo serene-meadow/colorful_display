@@ -2,6 +2,7 @@
 #include "HslaColor.hpp"
 #include <algorithm>
 #include <optional>
+#include <unordered_map>
 
 namespace Project::SdlContext {
     SDL_Window *window = nullptr;
