@@ -18,7 +18,7 @@ namespace Project::SdlContext {
     */
     static std::optional<SDL_FPoint> mouse = std::nullopt;
 
-    static std::unordered_map<SDL_FingerID, std::optional<SDL_FPoint>> fingerMap;
+    static std::unordered_map<SDL_FingerID, SDL_FPoint> fingerMap;
 }
 
 void Project::SdlContext::refreshCachedWindowSize() {
@@ -71,6 +71,10 @@ void Project::SdlContext::mainLoop() {
                 SDL_DisplayMode displayMode; check(SDL_GetWindowDisplayMode(window, &displayMode));
                 println("Display mode: ", displayMode.w, ',', displayMode.h);
 
+                println("Finger count: ", fingerMap.size());
+
+                println();
+
                 break;
             case SDLK_BACKQUOTE:
                 // "Real" fullscreen is buggy in the browser.
@@ -119,7 +123,7 @@ void Project::SdlContext::mainLoop() {
             fingerMap[event.tfinger.fingerId] = {event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight};
             break;
         case SDL_FINGERUP:
-            fingerMap[event.tfinger.fingerId] = std::nullopt;
+            fingerMap.erase(event.tfinger.fingerId);
             break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
             case SDL_WINDOWEVENT_SHOWN:
@@ -259,9 +263,11 @@ void Project::SdlContext::refreshWindow() {
                 }
             };
 
-            for (auto const &point : sourcePointList) processPoint(point, PointType::source);
-
             if (mouse.has_value()) processPoint(*mouse, PointType::sink);
+
+            for (auto const &[identifier, point] : fingerMap) processPoint(point, PointType::sink);
+
+            for (auto const &point : sourcePointList) processPoint(point, PointType::source);
 
             SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
 
