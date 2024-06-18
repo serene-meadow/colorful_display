@@ -1,6 +1,6 @@
-# [Colorful Display in a Webpage](https://adrian-javid.github.io/colorful_display/)
+# Colorful Display in a [Webpage](https://adrian-javid.github.io/colorful_display/)
 
-This is a program that displays animated color gradients.
+This program displays animated color gradients.
 
 The purpose of this repository is to host a [webpage](https://adrian-javid.github.io/colorful_display/) that displays the graphical output of the program.
 
@@ -12,7 +12,7 @@ The purpose of this repository is to host a [webpage](https://adrian-javid.githu
 
 This project uses a [`Makefile`](https://www.gnu.org/software/make/manual/make.html) to build.
 
-Since this repository is mainly for a single webpage, I didn't feel the need to add options for building for other platforms besides Linux and [WebAssembly (WASM)](https://webassembly.org/).
+Since this repository is mainly for a single webpage, I don't feel the need to add options for building for other platforms besides Linux and [WebAssembly (WASM)](https://webassembly.org/).
 
 When building either for the native target or the website target, an `artifact` directory and a `build` directory are created. The `build` directory is for object files and dependency files. The compiled program is put into the `artifact` directory.
 
@@ -54,8 +54,8 @@ make website
 
 ## Dependencies
 
-Linux [`make`](https://www.gnu.org/software/make/) is used to build the program.
+Linux [`make`](https://www.gnu.org/software/make/) is used to build this program.
 
 The [Emscripten](https://emscripten.org/) compiler is used to compile the C++ code to WebAssembly for the webpage. To compile natively, another compiler is needed.
 
-[Simple DirectMedia Layer (SDL)](https://www.libsdl.org/) is used for the graphics.
+[Simple DirectMedia Layer (SDL)](https://www.libsdl.org/) is used for graphics and input.
