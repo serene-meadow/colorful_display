@@ -265,7 +265,8 @@ void Project::SdlContext::refreshWindow() {
 
             for (auto const &[identifier, point] : fingerMap) processPoint(point, PointType::sink);
 
-            for (auto const &point : sourcePointList) processPoint(point, PointType::source);
+            std::uint_fast8_t count{0u};
+            for (auto const &point : sourcePointList) processPoint(point, (count++ % 2 == 0) ? PointType::source : PointType::sink);
 
             SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
 
