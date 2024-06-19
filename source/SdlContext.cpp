@@ -19,7 +19,14 @@ namespace Project::SdlContext {
     */
     static std::optional<SDL_FPoint> mouse = std::nullopt;
 
-    static std::unordered_map<SDL_FingerID, SDL_FPoint> fingerMap;
+    struct NumberedPoint : SDL_FPoint {
+        using NumberType = std::uint_least8_t;
+        NumberType number;
+        explicit constexpr NumberedPoint(SDL_FPoint const &point, std::uint_least8_t const number):
+            SDL_FPoint(point), number{number}
+        {}
+    };
+    static std::unordered_map<SDL_FingerID, NumberedPoint> fingerMap;
 }
 
 void Project::SdlContext::refreshCachedWindowSize() {
@@ -118,7 +125,13 @@ void Project::SdlContext::mainLoop() {
             case SDL_BUTTON_RIGHT: break;
         } break;
         case SDL_FINGERDOWN: case SDL_FINGERMOTION:
-            fingerMap[event.tfinger.fingerId] = {event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight};
+            fingerMap.emplace(
+                event.tfinger.fingerId/* key */,
+                NumberedPoint(
+                    SDL_FPoint{event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight},
+                    static_cast<NumberedPoint::NumberType>(fingerMap.size())
+                )
+            );
             break;
         case SDL_FINGERUP:
             fingerMap.erase(event.tfinger.fingerId);
@@ -263,8 +276,10 @@ void Project::SdlContext::refreshWindow() {
 
             if (mouse.has_value() and fingerMap.size() == 0u) processPoint(*mouse, PointType::sink);
 
-            std::uint_fast8_t count{static_cast<std::uint_fast8_t>(fingerMap.size())};
-            for (auto const &[identifier, point] : fingerMap) processPoint(point, (count++ % 2 == 0) ? PointType::sink : PointType::source);
+            for (auto const &[identifier, point] : fingerMap) processPoint(
+                point,
+                (point.number % 2u == 0u) ? PointType::sink : PointType::source
+            );
 
             if (fingerMap.size() == 0u) for (auto const &point : sourcePointList) processPoint(point, PointType::source);
 
