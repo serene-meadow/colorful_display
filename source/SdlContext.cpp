@@ -132,12 +132,12 @@ void Project::SdlContext::mainLoop() {
                 point.y = event.tfinger.y * canvasBufferHeight;
                 break;
             } else {
-                // If the finger identifier is not in the map, then the next case will insert it.
-                [[fallthrough]]/* (to `case SDL_FINGERDOWN`) */;
+                // If the finger identifier is not in the map, insert it into the map.
+                goto insertFingerIdentifierIntoMap;
             }
         }
         case SDL_FINGERDOWN:
-            fingerMap.emplace(
+            insertFingerIdentifierIntoMap: fingerMap.emplace(
                 /* key */ event.tfinger.fingerId,
                 /* value */ NumberedPoint(
                     SDL_FPoint{event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight},
