@@ -124,6 +124,17 @@ void Project::SdlContext::mainLoop() {
             case SDL_BUTTON_MIDDLE: break;
             case SDL_BUTTON_RIGHT: break;
         } break;
+        case SDL_FINGERMOTION: {
+            auto const iter(fingerMap.find(event.tfinger.fingerId));
+            if (iter != fingerMap.end()) {
+                auto &point = iter->second;
+                point.x = event.tfinger.x * canvasBufferWidth;
+                point.y = event.tfinger.y * canvasBufferHeight;
+                break;
+            } else {
+                [[fallthrough]]; // If the finger identifier is not in the map, then the next case will insert it.
+            }
+        }
         case SDL_FINGERDOWN:
             fingerMap.emplace(
                 /* key */ event.tfinger.fingerId,
@@ -133,13 +144,6 @@ void Project::SdlContext::mainLoop() {
                 )
             );
             break;
-        case SDL_FINGERMOTION: {
-            auto const iter(fingerMap.find(event.tfinger.fingerId));
-            if (iter != fingerMap.end()) iter->second/* point */ = NumberedPoint(
-                SDL_FPoint{event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight},
-                iter->second/* point */.number
-            );
-        } break;
         case SDL_FINGERUP:
             fingerMap.erase(event.tfinger.fingerId);
             break;
