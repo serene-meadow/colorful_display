@@ -58,7 +58,7 @@ void Project::SdlContext::mainLoop() {
     static SDL_Event event;
     // Handle events.
     /*
-        This is the great switch statement of awesomeness.
+        This is the switch statement of greatness.
     */
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
@@ -124,15 +124,22 @@ void Project::SdlContext::mainLoop() {
             case SDL_BUTTON_MIDDLE: break;
             case SDL_BUTTON_RIGHT: break;
         } break;
-        case SDL_FINGERDOWN: case SDL_FINGERMOTION:
+        case SDL_FINGERDOWN:
             fingerMap.emplace(
-                event.tfinger.fingerId/* key */,
-                NumberedPoint(
+                /* key */ event.tfinger.fingerId,
+                /* value */ NumberedPoint(
                     SDL_FPoint{event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight},
                     static_cast<NumberedPoint::NumberType>(fingerMap.size())
                 )
             );
             break;
+        case SDL_FINGERMOTION: {
+            auto const iter(fingerMap.find(event.tfinger.fingerId));
+            if (iter != fingerMap.end()) iter->second/* point */ = NumberedPoint(
+                SDL_FPoint{event.tfinger.x * canvasBufferWidth, event.tfinger.y * canvasBufferHeight},
+                iter->second/* point */.number
+            );
+        } break;
         case SDL_FINGERUP:
             fingerMap.erase(event.tfinger.fingerId);
             break;
