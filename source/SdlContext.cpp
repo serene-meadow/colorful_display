@@ -19,6 +19,8 @@ namespace Project::SdlContext {
     */
     static std::optional<SDL_FPoint> mouse = std::nullopt;
 
+    static float scrollValue{0.0f};
+
     struct NumberedPoint : SDL_FPoint {
         using NumberType = std::uint_least8_t;
         NumberType number;
@@ -54,6 +56,8 @@ void Project::SdlContext::mainLoop() {
 
     // Get the change in time.
     deltaTime = currentTime - previousTime;
+
+    static bool debugFlag1{false};
 
     static SDL_Event event;
     // Handle events.
@@ -104,8 +108,12 @@ void Project::SdlContext::mainLoop() {
                     )
                 };
                 break;
-            case SDL_BUTTON_MIDDLE: break;
-            case SDL_BUTTON_RIGHT: break;
+            case SDL_BUTTON_MIDDLE:
+                scrollValue = 0.0f;
+                break;
+            case SDL_BUTTON_RIGHT:
+                debugFlag1 = true;
+                break;
         }; break;
         case SDL_MOUSEMOTION:
             if (mouse.has_value()) mouse = {
@@ -122,8 +130,14 @@ void Project::SdlContext::mainLoop() {
                 mouse = std::nullopt;
                 break;
             case SDL_BUTTON_MIDDLE: break;
-            case SDL_BUTTON_RIGHT: break;
+            case SDL_BUTTON_RIGHT:
+                debugFlag1 = false;
+                break;
         } break;
+        case SDL_MOUSEWHEEL:
+            scrollValue += event.wheel.preciseX + event.wheel.preciseY;
+            println("Mouse scroll: (", event.wheel.preciseX, ", ", event.wheel.preciseY, ") -> ", scrollValue);
+            break;
         case SDL_FINGERMOTION: {
             auto const iter(fingerMap.find(event.tfinger.fingerId));
             if (iter != fingerMap.end()) {
@@ -186,6 +200,8 @@ void Project::SdlContext::mainLoop() {
             std::exit(EXIT_SUCCESS);
             break;
     }
+    
+    if (debugFlag1) println("Scroll value: ", scrollValue += 10.0);
 
     refreshWindow();
 
@@ -236,18 +252,19 @@ void Project::SdlContext::refreshWindow() {
         }
     };
 
+    // Parametric functions.
     static constexpr std::array sourceFunctionList{
-        // +[](float const percentage) constexpr -> SDL_FPoint {
-        //     float const t{linearInterpolation<float>(percentage, 0.0, 2.0 * pi)};
-        //     return {
-        //         /* x */ canvasBufferWidth * (std::sin(3.0f * t) + 1.0f) / 2.0f,
-        //         /* y */ canvasBufferHeight * (std::sin(2.0f * t) + 1.0f) / 2.0f
-        //     };
-        // },
+        +[](float const percentage) constexpr -> SDL_FPoint {
+            float const t{linearInterpolation<float>(percentage, 0.0, 2.0 * pi)};
+            return {
+                /* x */ canvasBufferWidth * (std::sin(3.0f * t) + 1.0f) / 2.0f,
+                /* y */ canvasBufferHeight * (std::sin(2.0f * t) + 1.0f) / 2.0f
+            };
+        },
         +outlineCanvas,
-        // +[](float const percentage) constexpr -> SDL_FPoint {
-        //     return outlineCanvas(wrapValue(percentage + .50, 1.0));
-        // },
+        +[](float const percentage) constexpr -> SDL_FPoint {
+            return outlineCanvas(wrapValue(percentage + .50, 1.0));
+        },
     };
 
     static std::array<SDL_FPoint, sourceFunctionList.size()> sourcePointList{};
@@ -272,7 +289,7 @@ void Project::SdlContext::refreshWindow() {
                     std::sqrt(std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0))
                 };
 
-                double const hueOffset{hueUnit * distance};
+                double const hueOffset{(hueUnit + scrollValue) * distance};
 
                 switch (pointType) {
                     case PointType::source:

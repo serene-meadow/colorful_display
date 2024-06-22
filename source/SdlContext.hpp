@@ -40,7 +40,7 @@ namespace Project::SdlContext {
     extern int getWindowWidth();
     extern int getWindowHeight();
 
-    inline constexpr int canvasBufferWidth{100}, canvasBufferHeight{100};
+    inline constexpr int canvasBufferWidth{350}, canvasBufferHeight{350};
 
     extern void exitHandler();
     extern void mainLoop();
