@@ -132,7 +132,8 @@ void Project::SdlContext::mainLoop() {
                 point.y = event.tfinger.y * canvasBufferHeight;
                 break;
             } else {
-                [[fallthrough]]; // If the finger identifier is not in the map, then the next case will insert it.
+                // If the finger identifier is not in the map, then the next case will insert it.
+                [[fallthrough]]/* (to `case SDL_FINGERDOWN`) */;
             }
         }
         case SDL_FINGERDOWN:
