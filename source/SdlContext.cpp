@@ -15,11 +15,21 @@ namespace Project::SdlContext {
 
     /*
         This point represents the position on the canvas buffer, not the actual displayed window.
-        If this is null, then the user is not pressing their left mouse button.
+        If this is null, then the user is not pressing the mouse button.
     */
     static std::optional<SDL_FPoint> mouse = std::nullopt;
 
     static float scrollValue{0.0f};
+
+    static inline void decayScrollValue(double const percentage) {
+        double const x{linearInterpolation(percentage, -40.0, 24.4)};
+        double const offset{4.9 * std::exp(0.07 * x)};
+
+        /**/ if (scrollValue > 0.0f)
+            scrollValue = std::max<float>(0.0f, scrollValue - offset);
+        else if (scrollValue < 0.0f)
+            scrollValue = std::min<float>(0.0f, scrollValue + offset);
+    }
 
     struct NumberedPoint : SDL_FPoint {
         using NumberType = std::uint_least8_t;
@@ -47,6 +57,9 @@ void Project::SdlContext::exitHandler() {
     SDL_Quit();
 }
 
+/**
+ * @note Not thread-safe.
+ */
 void Project::SdlContext::mainLoop() {
     // Time of the previous iteration.
     static Uint64 previousTime{0u};
@@ -58,6 +71,8 @@ void Project::SdlContext::mainLoop() {
     deltaTime = currentTime - previousTime;
 
     static bool debugFlag1{false};
+
+    static double decayTimerPercentage{0.0};
 
     static SDL_Event event;
     // Handle events.
@@ -162,6 +177,11 @@ void Project::SdlContext::mainLoop() {
         case SDL_FINGERUP:
             fingerMap.erase(event.tfinger.fingerId);
             break;
+        case SDL_MULTIGESTURE:
+            if (std::fabs(event.mgesture.dDist/* pinch distance */) > 0.002f/* threshold */) {
+                scrollValue += event.mgesture.dDist/* pinch distance */ * event.mgesture.numFingers;
+            }
+            break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
             case SDL_WINDOWEVENT_SHOWN:
                 println("Window has been shown");
@@ -200,8 +220,16 @@ void Project::SdlContext::mainLoop() {
             std::exit(EXIT_SUCCESS);
             break;
     }
-    
-    if (debugFlag1) println("Scroll value: ", scrollValue += 10.0);
+
+    if (mouse.has_value() or not fingerMap.empty()) 
+        decayTimerPercentage = 0.0;
+    else decayScrollValue(
+        decayTimerPercentage = std::clamp(decayTimerPercentage + static_cast<double>(deltaTime) * (0.00005), 0.0, 1.0)
+    );
+
+    if (debugFlag1) scrollValue += 60.0;
+
+    println("Decay timer percentage: ", decayTimerPercentage, ", Scroll value: ", scrollValue);
 
     refreshWindow();
 
@@ -214,6 +242,9 @@ void Project::SdlContext::mainLoop() {
 
 #include <array>
 
+/** 
+ * @note Not thread-safe.
+ */
 void Project::SdlContext::refreshWindow() {
     static HslaColor mainColor;
 
