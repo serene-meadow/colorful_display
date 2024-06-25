@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace Project/* String */ {
+namespace Project /* String */ {
 
     template <typename... Params>
     inline void print(Params &&... params) {
@@ -47,7 +47,7 @@ namespace Project/* String */ {
 
 }
 
-namespace Project/* Math */ {
+namespace Project /* Math */ {
 
     template <typename IntT>
     constexpr std::enable_if_t<std::is_integral_v<IntT>, IntT> wrapValue(IntT value, IntT const upperBound) {
