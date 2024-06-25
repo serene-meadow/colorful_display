@@ -1,8 +1,9 @@
-#include "SdlContext.hpp"
-#include "HslaColor.hpp"
 #include <algorithm>
 #include <optional>
 #include <unordered_map>
+#include <array>
+#include "SdlContext.hpp"
+#include "HslaColor.hpp"
 
 namespace Project::SdlContext {
     SDL_Window *window = nullptr;
@@ -19,16 +20,18 @@ namespace Project::SdlContext {
     */
     static std::optional<SDL_FPoint> mouse = std::nullopt;
 
-    static float scrollValue{0.0f};
+    static float hueSummand{0.0f};
 
-    static inline void decayScrollValue(double const percentage) {
-        double const x{linearInterpolation(percentage, -40.0, 24.4)};
-        double const offset{4.9 * std::exp(0.07 * x)};
+    static inline constexpr double customExponential(double const percentage) {
+        double const x{linearInterpolation(percentage, -43.165, 54.4)};
+        return 4.9 * std::exp(0.07 * x);
+    }
 
-        /**/ if (scrollValue > 0.0f)
-            scrollValue = std::max<float>(0.0f, scrollValue - offset);
-        else if (scrollValue < 0.0f)
-            scrollValue = std::min<float>(0.0f, scrollValue + offset);
+    static inline void decayHueSummand(double const percentage) {
+        /**/ if (hueSummand > 0.0f)
+            hueSummand = std::max<float>(0.0f, hueSummand - customExponential(percentage));
+        else if (hueSummand < 0.0f)
+            hueSummand = std::min<float>(0.0f, hueSummand + customExponential(percentage));
     }
 
     struct NumberedPoint : SDL_FPoint {
@@ -70,9 +73,11 @@ void Project::SdlContext::mainLoop() {
     // Get the change in time.
     deltaTime = currentTime - previousTime;
 
-    static bool debugFlag1{false};
+    static double decayRateTimerPercentage{0.0};
 
-    static double decayTimerPercentage{0.0};
+    [[maybe_unused]] static bool mouseRightButtonIsPressed{false};
+
+    static double mousePowerLevelPercentage{0.0};
 
     static SDL_Event event;
     // Handle events.
@@ -81,25 +86,6 @@ void Project::SdlContext::mainLoop() {
     */
     while (SDL_PollEvent(&event)) switch (event.type) {
         case SDL_KEYDOWN: switch (event.key.keysym.sym) {
-            case SDLK_COMMA:
-                println("title: ", SDL_GetWindowTitle(window));
-
-                println("cached window size: ", charJoin(windowWidth, windowHeight));
-
-                int w, h; SDL_GetWindowSize(window, &w, &h);
-                println("actual window size: ", charJoin(w, h));
-
-                int windowX, windowY; SDL_GetWindowPosition(window, &windowX, &windowY);
-                println("window position: ", charJoin(windowX, windowY));
-
-                float windowOpacity; check(SDL_GetWindowOpacity(window, &windowOpacity));
-                println("window opacity: ", windowOpacity);
-
-                println("Finger count: ", fingerMap.size());
-
-                println();
-
-                break;
             case SDLK_BACKQUOTE:
                 // "Real" fullscreen is buggy in the browser.
                 #ifdef __EMSCRIPTEN__
@@ -124,12 +110,12 @@ void Project::SdlContext::mainLoop() {
                 };
                 break;
             case SDL_BUTTON_MIDDLE:
-                scrollValue = 0.0f;
+                hueSummand = 0.0f;
                 break;
             case SDL_BUTTON_RIGHT:
-                debugFlag1 = true;
+                mouseRightButtonIsPressed = true;
                 break;
-        }; break;
+        } break;
         case SDL_MOUSEMOTION:
             if (mouse.has_value()) mouse = {
                 linearInterpolation<float>(
@@ -144,14 +130,15 @@ void Project::SdlContext::mainLoop() {
             case SDL_BUTTON_LEFT:
                 mouse = std::nullopt;
                 break;
-            case SDL_BUTTON_MIDDLE: break;
+            case SDL_BUTTON_MIDDLE:
+                /* no operation; do nothing */;
+                break;
             case SDL_BUTTON_RIGHT:
-                debugFlag1 = false;
+                mouseRightButtonIsPressed = false;
                 break;
         } break;
         case SDL_MOUSEWHEEL:
-            scrollValue += event.wheel.preciseX + event.wheel.preciseY;
-            println("Mouse scroll: (", event.wheel.preciseX, ", ", event.wheel.preciseY, ") -> ", scrollValue);
+            /* no operation; do nothing */;
             break;
         case SDL_FINGERMOTION: {
             auto const iter(fingerMap.find(event.tfinger.fingerId));
@@ -177,70 +164,42 @@ void Project::SdlContext::mainLoop() {
         case SDL_FINGERUP:
             fingerMap.erase(event.tfinger.fingerId);
             break;
-        case SDL_MULTIGESTURE:
-            if (std::fabs(event.mgesture.dDist/* pinch distance */) > 0.002f/* threshold */) {
-                scrollValue += event.mgesture.dDist/* pinch distance */ * event.mgesture.numFingers;
-            }
-            break;
-        case SDL_WINDOWEVENT: switch (event.window.event) {
-            case SDL_WINDOWEVENT_SHOWN:
-                println("Window has been shown");
-                break;
-            case SDL_WINDOWEVENT_HIDDEN:
-                println("Window has been hidden.");
-                break;
-            case SDL_WINDOWEVENT_EXPOSED:
-                println("Window has been exposed and should be redrawn");
-                break;
-            case SDL_WINDOWEVENT_MOVED:
-                println("Window has been moved to (", charJoin(event.window.data1, event.window.data2), ")");
-                break;
-            case SDL_WINDOWEVENT_SIZE_CHANGED:
-                println("Window has been resized: ", event.window.data1, ',', event.window.data2);
-                windowWidth = event.window.data1;
-                windowHeight = event.window.data2;
-                break;
-            case SDL_WINDOWEVENT_RESIZED/* Resize Request is External to the Program */:
-                println("Something external to the program requested for the window to be resized.");
-                break;
-            case SDL_WINDOWEVENT_MINIMIZED:       println("Window has been minimized"); break;
-            case SDL_WINDOWEVENT_MAXIMIZED:       println("Window has been maximized"); break;
-            case SDL_WINDOWEVENT_RESTORED:        println("Window has been restored to normal size and position"); break;
-            case SDL_WINDOWEVENT_ENTER:           println("Window has gained mouse focus"); break;
-            case SDL_WINDOWEVENT_LEAVE:           println("Window has lost mouse focus"); break;
-            case SDL_WINDOWEVENT_FOCUS_GAINED:    println("Window has gained keyboard focus"); break;
-            case SDL_WINDOWEVENT_FOCUS_LOST:      println("Window has lost keyboard focus"); break;
-            case SDL_WINDOWEVENT_CLOSE:           println("The window manager requests that the window be closed"); break;
-            case SDL_WINDOWEVENT_TAKE_FOCUS:      println("Window is being offered a focus (should SetWindowInputFocus() on itself or a subwindow, or ignore)"); break;
-            case SDL_WINDOWEVENT_HIT_TEST:        println("Window had a hit test that wasn't SDL_HITTEST_NORMAL."); break;
-            case SDL_WINDOWEVENT_ICCPROF_CHANGED: println("The ICC profile of the window's display has changed."); break;
-            case SDL_WINDOWEVENT_DISPLAY_CHANGED: println("Window has been moved to display data1."); break;
+        case SDL_MULTIGESTURE: if (std::fabs(event.mgesture.dDist/* pinch distance */) > 0.002f/* threshold */) {
+            hueSummand += 0.15 * event.mgesture.dDist/* pinch distance */ * event.mgesture.numFingers;
         } break;
         case SDL_QUIT:
             std::exit(EXIT_SUCCESS);
             break;
     }
 
-    if (mouse.has_value() or not fingerMap.empty()) 
-        decayTimerPercentage = 0.0;
-    else decayScrollValue(
-        decayTimerPercentage = std::clamp(decayTimerPercentage + static_cast<double>(deltaTime) * (0.00005), 0.0, 1.0)
+    if (mouse.has_value() or not fingerMap.empty() or mouseRightButtonIsPressed) {
+        decayRateTimerPercentage = 0.0;
+    } else decayHueSummand(
+        decayRateTimerPercentage = std::clamp(decayRateTimerPercentage + static_cast<double>(deltaTime) * 0.00005, 0.0, 1.0)
     );
 
-    if (debugFlag1) scrollValue += 60.0;
+    if (mouseRightButtonIsPressed) hueSummand += customExponential(
+        mousePowerLevelPercentage = std::clamp(mousePowerLevelPercentage + static_cast<double>(deltaTime) * 0.00005, 0.0, 1.0)
+    ); else /* mouse right button is not pressed */ {
+        mousePowerLevelPercentage = std::clamp(mousePowerLevelPercentage - static_cast<double>(deltaTime) * 0.00005, 0.0, 1.0);
+    }
 
-    println("Decay timer percentage: ", decayTimerPercentage, ", Scroll value: ", scrollValue);
+    #ifndef __EMSCRIPTEN__
+    println(
+        "Decay Timer: ", decayRateTimerPercentage,
+        ", Mouse Power: ", mousePowerLevelPercentage,
+        ", Scroll Value: ", hueSummand
+    );
+    #endif
 
     refreshWindow();
 
     // As this iteration ends, update the previous time.
     previousTime = currentTime;
 
-    // Give the CPU a break.
+    // Give the CPU a break?
     SDL_Delay(1u);
 }
-
-#include <array>
 
 /** 
  * @note Not thread-safe.
@@ -265,12 +224,12 @@ void Project::SdlContext::refreshWindow() {
 
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wnarrowing"
-    int const pixelRowLength{pitch / SDL_BYTESPERPIXEL(pixelFormat->format)};
+    int const bytesPerPixel{SDL_BYTESPERPIXEL(pixelFormat->format)};
     #pragma GCC diagnostic pop
+    int const pixelRowLength{pitch / bytesPerPixel};
 
     Uint32 *const pixelArray = static_cast<Uint32 *>(pixelPointer);
 
-    [[maybe_unused]]
     static constexpr auto outlineCanvas = [](float const percentage) constexpr -> SDL_FPoint {
         /****/ if (percentage <= .25) {
             return {linearInterpolation<float>(percentage * 4.0, 0.0f, canvasBufferWidth), 0.0};
@@ -315,12 +274,12 @@ void Project::SdlContext::refreshWindow() {
             auto const processPoint = [x, y, &hslaPixel](
                 SDL_FPoint const &point,
                 PointType const pointType
-            ) constexpr -> void {
+            ) -> void {
                 double const distance{
                     std::sqrt(std::pow(static_cast<double>(x) - point.x, 2.0) + std::pow(static_cast<double>(y) - point.y, 2.0))
                 };
 
-                double const hueOffset{(hueUnit + scrollValue) * distance};
+                double const hueOffset{(hueUnit + hueSummand) * distance};
 
                 switch (pointType) {
                     case PointType::source:
@@ -341,7 +300,7 @@ void Project::SdlContext::refreshWindow() {
                 (point.number % 2u == 0u) ? PointType::sink : PointType::source
             );
 
-            if (fingerMap.size() == 0u) for (auto const &point : sourcePointList) processPoint(point, PointType::source);
+            for (auto const &point : sourcePointList) processPoint(point, PointType::source);
 
             SDL_Color const rgbaPixel(hslaPixel.toRgbaColor());
 
