@@ -30,7 +30,7 @@ LINKER_FLAG_LIST := #(empty string)
 ifeq (${target}, native)
 .DEFAULT_GOAL := ${ART_DIR}/${name}
 compiler := c++
-COMPILER_FLAG_LIST += -fsanitize=undefined -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_DEBUG $(shell pkg-config --cflags sdl2)
+COMPILER_FLAG_LIST += -fsanitize=undefined -D_GLIBCXX_DEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_DEBUG_PEDANTIC -D_GLIBCXX_SANITIZE_VECTOR $(shell pkg-config --cflags sdl2)
 LINKER_FLAG_LIST += -fsanitize=undefined $(shell pkg-config --libs sdl2)
 ARTIFACT := ${ART_DIR}/${name}
 else ifeq (${target}, web)
