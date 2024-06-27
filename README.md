@@ -41,7 +41,6 @@ make compiler=clang++
 
 This following command removes the build files for the native target created by the `make` command.
 ```sh
-# Removes the `artifact` directory and the `build` directoy.
 make clean
 ```
 
