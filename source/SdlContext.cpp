@@ -194,7 +194,7 @@ void Project::SdlContext::mainLoop() {
     println(
         "Decay Timer: ", decayRateTimerPercentage,
         ", Mouse Power: ", mousePowerLevelPercentage,
-        ", Scroll Value: ", hueSummand
+        ", Hue Summand: ", hueSummand
     );
     #endif
 
