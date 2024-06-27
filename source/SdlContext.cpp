@@ -165,7 +165,7 @@ void Project::SdlContext::mainLoop() {
             fingerMap.erase(event.tfinger.fingerId);
             break;
         case SDL_MULTIGESTURE: if (std::fabs(event.mgesture.dDist/* pinch distance */) > 0.002f/* threshold */) {
-            hueSummand += 236.04f + 1.15f * event.mgesture.dDist/* pinch distance */ * static_cast<float>(event.mgesture.numFingers);
+            hueSummand += 27.25f * event.mgesture.dDist/* pinch distance */ * static_cast<float>(event.mgesture.numFingers);
         } break;
         case SDL_WINDOWEVENT: switch (event.window.event) {
             case SDL_WINDOWEVENT_SIZE_CHANGED:
