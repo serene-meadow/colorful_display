@@ -44,13 +44,6 @@
 </head>
 
 <body>
-    <div id=epilepsy_warning>
-        <h1>&#9888; WARNING &#9888;</h1>
-        <p>This video may potentially trigger seizures for people with photosensitive epilepsy.</p>
-        <p>Viewer discretion is advised.</p>
-        <button onclick="showCanvas()">I understand; view video.</button>
-    </div>
-
     <canvas class="emscripten" id="canvas" style="display: none;" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script type='text/javascript'>
@@ -77,6 +70,13 @@
             })()
         };
     </script>
+
+    <div id=epilepsy_warning>
+        <h1>&#9888; WARNING &#9888;</h1>
+        <p>This video may potentially trigger seizures for people with photosensitive epilepsy, because it contains moving stripes of contrasting colors, flashing lights, and other moving patterns.</p>
+        <p>Viewer discretion is advised.</p>
+        <button onclick="showCanvas()">I understand; view video.</button>
+    </div>
 
 </body>
 
