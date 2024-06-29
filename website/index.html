@@ -38,13 +38,17 @@
     <meta name="theme-color" content="#AEC6CF">
 
     <script>
-        function showCanvas() {
+        function startPresentation() {
             document.getElementById("epilepsy_warning").style.display = "none";
-
+            
             Module.canvas.style.opacity = "0%";
             Module.canvas.style.display = "block";
             Module.canvas.style.height = "100%";
             Module.canvas.style.width = "100%";
+
+            let userGuide = document.getElementById("user_guide");
+            userGuide.style.opacity = "0%"
+            userGuide.style.display = "block";
 
             let script = document.createElement("script");
             script.type = "text/javascript";
@@ -54,7 +58,9 @@
             script.onload = function() {
                 console.log("Program loaded.");
                 Module.canvas.classList.add("fade_in_animation");
+                userGuide.classList.add("fade_in_animation");
             };
+
         }
     </script>
 </head>
@@ -97,9 +103,8 @@
         <h1>&#9888; WARNING &#9888;</h1>
         <p>This video may potentially trigger seizures for people with photosensitive epilepsy, because it contains moving stripes of contrasting colors, flashing lights, and other moving patterns.</p>
         <p>Viewer discretion is advised.</p>
-        <button onclick="showCanvas()">I understand; view video.</button>
+        <button onclick="startPresentation()">I understand; view video.</button>
     </div>
-
 </body>
 
 </html>
