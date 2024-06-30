@@ -207,6 +207,32 @@ void Project::SdlContext::mainLoop() {
     SDL_Delay(1u);
 }
 
+namespace Project::SdlContext {
+    template <int frequency=1>
+    static constexpr float sine(float const t) { return std::sin(static_cast<float>(frequency) * t); }
+
+    template <int frequency=1>
+    static constexpr float cosine(float const t) { return std::cos(static_cast<float>(frequency) * t); }
+
+    template <float (*...functions)(float const t)>
+    static constexpr float productOfFunctions(float const t) {
+        return (... * functions(t));
+    }
+
+    template <
+        float (*xFunction)(float const t),
+        float (*yFunction)(float const t)
+    >
+    static constexpr SDL_FPoint parametricWithPeriodOfTwoPi(float const percentage) {
+        float const t{linearInterpolation<float>(percentage, 0.0f, 2.0f * pi)};
+        return {
+            /* x */ canvasBufferWidth  * (xFunction(t) / 2.0f + 0.5f),
+            /* y */ canvasBufferHeight * (yFunction(t) / 2.0f + 0.5f) 
+        };
+    }
+
+}
+
 /** 
  * @note Not thread-safe.
  */
