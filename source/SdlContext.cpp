@@ -276,17 +276,20 @@ void Project::SdlContext::refreshWindow() {
 
     // Parametric functions.
     static constexpr std::array sourceFunctionList{
-        +[](float const percentage) constexpr -> SDL_FPoint {
-            float const t{linearInterpolation<float>(percentage, 0.0, 2.0 * pi)};
-            return {
-                /* x */ canvasBufferWidth * (std::sin(3.0f * t) + 1.0f) / 2.0f,
-                /* y */ canvasBufferHeight * (std::sin(2.0f * t) + 1.0f) / 2.0f
-            };
-        },
+    
+        parametricWithPeriodOfTwoPi</* x */ sine<3>, /* y */ sine<2>>,
+    
+        parametricWithPeriodOfTwoPi<
+            /* x */ productOfFunctions<sine<3>, cosine<5>>,
+            /* y */ cosine<3>
+        >,
+    
         +outlineCanvas,
+    
         +[](float const percentage) constexpr -> SDL_FPoint {
-            return outlineCanvas(wrapValue(percentage + .50, 1.0));
+            return outlineCanvas(wrapValue(percentage + .50f, 1.0f));
         },
+
     };
 
     static std::array<SDL_FPoint, sourceFunctionList.size()> sourcePointList{};
