@@ -9,6 +9,7 @@ html, body {
 
     /* Flexbox */
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
