@@ -11,9 +11,19 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    position: relative /* this while be for the containing block for `#user_guide` */
 }
 
-#epilepsy_warning {
+button {
+    border: none;
+    padding: 1.26% 3.2%;
+    font-size: 102%;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.container {
     /* structure */
     display: flex;
     flex-direction: column;
@@ -50,11 +60,6 @@ html, body {
 #epilepsy_warning button {
     background-color: #ff0000;
     color: white;
-    border: none;
-    padding: 1.26% 3.2%;
-    font-size: 102%;
-    cursor: pointer;
-    border-radius: 6px;
     transition: background-color 0.3s ease;
 }
 
