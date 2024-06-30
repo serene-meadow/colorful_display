@@ -60,7 +60,7 @@ namespace Project /* Math */ {
     }
 
     template <typename FloatT>
-    std::enable_if_t<std::is_floating_point_v<FloatT>, FloatT> wrapValue(FloatT value, FloatT const upperBound) {
+    inline std::enable_if_t<std::is_floating_point_v<FloatT>, FloatT> wrapValue(FloatT value, FloatT const upperBound) {
         static constexpr FloatT zero{0.0};
 
         assert(upperBound != 0);
