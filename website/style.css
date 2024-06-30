@@ -62,6 +62,29 @@ html, body {
     background-color: #cc0000;
 }
 
+#user_guide {
+    position: absolute;
+    background-color: lightskyblue;
+}
+
+#user_guide * {
+    margin: 1.35%;
+}
+
+#user_guide p {
+    font-size: 142%;
+}
+
+#user_guide button {
+    background-color: darkcyan;
+    color: white;
+    transition: background-color 0.64s ease;
+}
+
+#user_guide button:hover {
+    background-color: blue;
+}
+
 .fade_in_animation {
     animation: fade_in_keyframes ease-in 4s;
     animation-iteration-count: 1;
