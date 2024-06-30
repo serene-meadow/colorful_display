@@ -329,7 +329,8 @@ void Project::SdlContext::refreshWindow() {
 
             for (auto const &[identifier, point] : fingerMap) processPoint(
                 point,
-                (point.number % 2u == 0u) ? PointType::sink : PointType::source
+                // (point.number % 2u == 0u) ? PointType::sink : PointType::source
+                PointType::sink
             );
 
             for (auto const &point : sourcePointList) processPoint(point, PointType::source);
