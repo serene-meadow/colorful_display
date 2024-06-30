@@ -44,6 +44,12 @@ button {
     border-radius: 25px;
 }
 
+#epilepsy_warning {
+    /* color */
+    background-color: #ffcccc;
+    border: 0px solid #ff0000;
+}
+
 #epilepsy_warning * {
     margin: 2.35%;
 }
