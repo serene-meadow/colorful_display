@@ -52,7 +52,7 @@
 
             let script = document.createElement("script");
             script.type = "text/javascript";
-            script.src = "compiled/colorful_display.js";
+            script.src = "compiled/colorful_display.js"; /* This script seems to cause the document's title to loose emojis. */
             document.head.appendChild(script);
 
             script.onload = function() {
