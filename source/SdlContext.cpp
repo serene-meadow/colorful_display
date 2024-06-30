@@ -75,7 +75,7 @@ void Project::SdlContext::mainLoop() {
 
     static double decayRateTimerPercentage{0.0};
 
-    [[maybe_unused]] static bool mouseRightButtonIsPressed{false};
+    static bool mouseRightButtonIsPressed{false};
 
     static double mousePowerLevelPercentage{0.0};
 
