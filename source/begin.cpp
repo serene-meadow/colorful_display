@@ -17,7 +17,7 @@ int main() {
     std::atexit/* 1/32 */(&Sdl::exitHandler);
 
     Sdl::window = Sdl::check(SDL_CreateWindow(
-        "Colorful Display",
+        /* title (UTF-8 encoded) */ "Colorful Display \xF0\x9F\x8C\x88",
         SDL_WINDOWPOS_CENTERED/* x position */, SDL_WINDOWPOS_CENTERED/* y position */,
         Sdl::getWindowWidth(), Sdl::getWindowHeight(),
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MINIMIZED
