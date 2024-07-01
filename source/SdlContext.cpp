@@ -192,14 +192,6 @@ void Project::SdlContext::mainLoop() {
         mousePowerLevelPercentage = std::clamp(mousePowerLevelPercentage - static_cast<double>(deltaTime) * 0.00005, 0.0, 1.0);
     }
 
-    #ifndef __EMSCRIPTEN__
-    println(
-        "Decay Timer: ", decayRateTimerPercentage,
-        ", Mouse Power: ", mousePowerLevelPercentage,
-        ", Hue Summand: ", hueSummand
-    );
-    #endif
-
     refreshWindow();
 
     // As this iteration ends, update the previous time.
