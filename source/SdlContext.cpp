@@ -4,6 +4,7 @@
 #include <array>
 #include "SdlContext.hpp"
 #include "HslaColor.hpp"
+#include <limits>
 
 namespace Project::SdlContext {
     SDL_Window *window = nullptr;
@@ -225,6 +226,70 @@ namespace Project::SdlContext {
         };
     }
 
+    /**
+     * @brief Refresh the title of the window.
+     * 
+     * @note This function is not thread-safe.
+     * 
+     * @note This algorithm could possibly be improved by
+     * only copying the last character from the color strings
+     * to the buffer, because those are the only part of the strings
+     * that differ between the colors; they all start with "\\xF0\\x9F\\x9F".
+     * 
+     * @param percentage position in animation time
+     */
+    static inline void refreshTitle(double const percentage) {
+        static constexpr std::uint_fast8_t colorStringLength{4u};
+        static constexpr std::uint_fast8_t colorSize{colorStringLength + 1u/* null terminator */};
+
+        static constexpr char
+            red    [colorSize] = "\xF0\x9F\x9F\xA5",
+            orange [colorSize] = "\xF0\x9F\x9F\xA7",
+            yellow [colorSize] = "\xF0\x9F\x9F\xA8",
+            green  [colorSize] = "\xF0\x9F\x9F\xA9",
+            blue   [colorSize] = "\xF0\x9F\x9F\xA6",
+            purple [colorSize] = "\xF0\x9F\x9F\xAA"
+        ;
+        static constexpr std::array colorList{red, orange, yellow, green, blue, purple};
+
+        static_assert(colorList.size() <= std::numeric_limits<std::uint_fast8_t>::max());
+        static constexpr std::uint_fast8_t colorListSize{colorList.size()};
+
+        static std::uint_fast8_t cachedColorOffset{std::numeric_limits<std::uint_fast8_t>::max()};
+
+        std::uint_fast8_t const colorOffset{
+            static_cast<std::uint_fast8_t>(
+                std::round(
+                    linearInterpolation(
+                        percentage,
+                        /* start */ static_cast<double>(colorListSize),
+                        /* end */ 0.0
+                    )
+                )
+            )
+        };
+
+        if (colorOffset == cachedColorOffset) return /* Don't set the title if it would change nothing. */;
+
+        cachedColorOffset = colorOffset;
+
+        static constexpr std::uint_fast8_t bufferColorCount{colorListSize + 4u};
+        static constexpr std::size_t bufferSize{colorStringLength * bufferColorCount/* color count */ + 1uL/* null terminator */};
+        static char buffer[bufferSize] = {}/* (null terminated) */;
+
+        for (std::uint_fast8_t colorIndex{0u}; colorIndex < bufferColorCount; ++colorIndex) {
+            auto const color = colorList[(colorIndex + colorOffset) % colorListSize];
+
+            static_assert(bufferSize <= std::numeric_limits<std::uint_fast8_t>::max());
+            std::copy(
+                color,
+                color + colorStringLength,
+                buffer + (colorIndex * colorStringLength)
+            );
+        }
+
+        SDL_SetWindowTitle(window, buffer);
+    }
 }
 
 /** 
@@ -344,6 +409,8 @@ void Project::SdlContext::refreshWindow() {
 
     // Copy pixel data from the canvas buffer to the window.
     check(SDL_RenderCopy(renderer, canvasBuffer, nullptr/* use entire texture */, nullptr/* stretch texture to entire window */));
+
+    refreshTitle(huePercentage);
 
     SDL_RenderPresent(renderer);
 }
