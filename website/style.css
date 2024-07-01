@@ -62,7 +62,7 @@ button {
 
 #epilepsy_warning h1 {
     color: #ff0000;
-    font-size: clamp(15px, calc(4vw + 1vh), 228%);
+    font-size: clamp(15px, calc(4.035vw + 1.15vh), 228%);
     margin-bottom: 1%;
 }
 
