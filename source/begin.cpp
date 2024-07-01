@@ -27,6 +27,9 @@ int main() {
         "Failed to create system cursor image \"hand\". ", SDL_GetError()
     );
 
+    // This function is safe to call with `NULL`, so even if the cursor image is `NULL`, that's okay.
+    SDL_SetCursor(Sdl::cursorImage);
+
     // Should I ask for a V-Sync renderer with the `SDL_RENDERER_PRESENTVSYNC` flag?
     Sdl::renderer = Sdl::check(SDL_CreateRenderer(Sdl::window, -1, 0u));
     Sdl::check(SDL_SetRenderDrawBlendMode(Sdl::renderer, SDL_BLENDMODE_NONE));
