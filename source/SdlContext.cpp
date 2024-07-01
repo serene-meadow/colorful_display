@@ -10,6 +10,7 @@ namespace Project::SdlContext {
     SDL_Renderer *renderer = nullptr;
     SDL_Texture *canvasBuffer = nullptr;
     SDL_PixelFormat *pixelFormat = nullptr;
+    SDL_Cursor *cursorImage = nullptr;
 
     static Uint64 deltaTime{0u};
     static int windowWidth{430}, windowHeight{430};
@@ -57,6 +58,7 @@ void Project::SdlContext::exitHandler() {
     if (renderer != nullptr) SDL_DestroyRenderer(renderer);
     if (canvasBuffer != nullptr) SDL_DestroyTexture(canvasBuffer);
     if (pixelFormat != nullptr) SDL_FreeFormat(pixelFormat);
+    if (cursorImage != nullptr) SDL_FreeCursor(cursorImage);
     SDL_Quit();
 }
 

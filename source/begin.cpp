@@ -23,6 +23,10 @@ int main() {
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MINIMIZED
     ));
 
+    if ((Sdl::cursorImage = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND)) == nullptr) Sdl::warn(
+        "Failed to create system cursor image \"hand\". ", SDL_GetError()
+    );
+
     // Should I ask for a V-Sync renderer with the `SDL_RENDERER_PRESENTVSYNC` flag?
     Sdl::renderer = Sdl::check(SDL_CreateRenderer(Sdl::window, -1, 0u));
     Sdl::check(SDL_SetRenderDrawBlendMode(Sdl::renderer, SDL_BLENDMODE_NONE));

@@ -46,6 +46,7 @@ namespace Project::SdlContext {
     extern SDL_Renderer *renderer;
     extern SDL_Texture *canvasBuffer;
     extern SDL_PixelFormat *pixelFormat;
+    extern SDL_Cursor *cursorImage;
 
     extern void refreshCachedWindowSize();
 
