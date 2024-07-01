@@ -9,14 +9,14 @@
 
 namespace Project /* String */ {
 
-    template <typename... Params>
-    inline void print(Params &&... params) {
-        (std::cout << ... << params) << std::flush;
+    template <typename... ParamsT>
+    inline void print(ParamsT &&... args) {
+        (std::cout << ... << args) << std::flush;
     }
 
-    template <typename... Params>
-    inline void println(Params &&... params) {
-        (std::cout << ... << params) << std::endl/* print new line and flush */;
+    template <typename... ParamsT>
+    inline void println(ParamsT &&... args) {
+        (std::cout << ... << args) << std::endl/* print new line and flush */;
     }
 
     template<typename T>
