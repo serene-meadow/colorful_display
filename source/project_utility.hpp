@@ -27,23 +27,23 @@ namespace Project /* String */ {
     template <typename DelimeterT>
     inline std::ostringstream &joinToStream(std::ostringstream &stream, DelimeterT const &) { return stream; }
 
-    template<typename DelimeterT, typename T, typename... Params>
-    inline std::ostringstream &joinToStream(std::ostringstream &stream, DelimeterT const &delimeter, T const &arg, Params const &... params) {
+    template<typename DelimeterT, typename T, typename... ParamsT>
+    inline std::ostringstream &joinToStream(std::ostringstream &stream, DelimeterT const &delimeter, T const &arg, ParamsT const &... args) {
         stream << arg;
-        if constexpr (sizeof...(params) > 0u) stream << delimeter;
-        return joinToStream(stream, delimeter, params...);
+        if constexpr (sizeof...(args) > 0u) stream << delimeter;
+        return joinToStream(stream, delimeter, args...);
     }
 
-    template<typename DelimeterT, typename... Params>
-    inline std::string stringJoin(DelimeterT const &delimeter, Params const &... params) {
+    template<typename DelimeterT, typename... ParamsT>
+    inline std::string stringJoin(DelimeterT const &delimeter, ParamsT const &... args) {
         std::ostringstream stream;
         stream << std::boolalpha;
-        joinToStream(stream, delimeter, params...);
+        joinToStream(stream, delimeter, args...);
         return stream.str();
     }
 
-    template<char delimeter=',', typename... Params>
-    inline std::string charJoin(Params const &... params) { return stringJoin(delimeter, params...); }
+    template<char delimeter=',', typename... ParamsT>
+    inline std::string charJoin(ParamsT const &... args) { return stringJoin(delimeter, args...); }
 
 }
 
