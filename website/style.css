@@ -23,7 +23,7 @@ p {
 button {
     border: none;
     padding: 1.26% 3.2%;
-    font-size: clamp(10px, calc(3.23vw + 1vh), 102%);
+    font-size: clamp(8.9px, calc(3.23vw + 1vh), 102%);
     cursor: pointer;
     border-radius: 6px;
 }
