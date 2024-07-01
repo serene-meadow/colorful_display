@@ -9,13 +9,26 @@
 #include "SDL.h"
 #pragma GCC diagnostic pop
 
-#include <iostream>
+#include <sstream>
 
 namespace Project::SdlContext {
     [[noreturn]]
     inline void errorOut() {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "%s", SDL_GetError());
         std::exit(EXIT_FAILURE);
+    }
+
+    /**
+     * @brief Convert arguments to a string, then call `SDL_LogWarn` with that string. 
+     * 
+     * @note This function creates and destroys a `std::ostringstream` every call.
+     * 
+     * @tparam ParamsT types of the arguments 
+     * @param args arguments
+     */
+    template <typename... ParamsT>
+    inline void warn(ParamsT &&... args) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s", (std::ostringstream() << ... << args).str().c_str());
     }
 
     inline constexpr void check(int const returnCode) {
