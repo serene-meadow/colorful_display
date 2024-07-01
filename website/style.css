@@ -42,9 +42,8 @@ button {
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
 
     /* shape */
-    width: 53%;
-    max-width: 90vw;
-    max-height: 90vh;
+    width: clamp(23px, 53vw, 90vw);
+    height: clamp(3px, 56.5vh, 90vh);
     margin: 1.5%;
     padding: 0.74%;
     border-radius: 25px;
