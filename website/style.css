@@ -6,6 +6,7 @@ html, body {
     overflow: auto;
     background-color: #AEC6CF;
     font-family: Arial, Helvetica, sans-serif;
+    color: black;
 
     /* Flexbox */
     display: flex;
