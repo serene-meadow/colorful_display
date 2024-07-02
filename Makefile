@@ -48,10 +48,10 @@ endif
 
 # Update website. (If not in `web` target, switch to `web` target to update the website.)
 ifeq (${target}, web)
-WEBSITE := $(patsubst ${ART_DIR}/%,${WEB_DIR}/%,${ARTIFACT})
-${WEBSITE}: ${ARTIFACT} | ${WEB_DIR}
+WEBSITE_CONTENT := $(patsubst ${ART_DIR}/%,${WEB_DIR}/%,${ARTIFACT})
+${WEBSITE_CONTENT}: ${ARTIFACT} | ${WEB_DIR}
 	cp ${ARTIFACT} ${WEB_DIR}/
-website: ${WEBSITE}
+website: ${WEBSITE_CONTENT}
 else
 website:
 	make target=web website
