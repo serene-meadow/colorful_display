@@ -72,7 +72,8 @@ info:
 	@printf '%s\n' 'Object Files: ${OBJ_LIST}'
 	@printf '%s\n' 'Artifact Directory: ${ART_DIR}'
 	@printf '%s\n' 'Source Directory: ${SRC_DIR}'
-	@printf '%s\n' 'Website: ${WEBSITE}'
+	@printf '%s\n' 'Website Content: ${WEBSITE_CONTENT}'
+	@printf '%s\n' 'Website Content Directory: ${WEB_DIR}'
 
 # Build program.
 ifeq (${target}, web)
