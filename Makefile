@@ -1,4 +1,4 @@
-# The target defines what is build. \
+# The target defines what is built. \
 	`native`: Native executable program. \
 	`web`: WebAssembly program with JavaScipt script to load it. 
 target := native
