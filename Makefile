@@ -28,17 +28,17 @@ COMPILER_FLAG_LIST := -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror -MMD -MP
 LINKER_FLAG_LIST := #(empty string)
 
 ifeq (${target}, native)
-.DEFAULT_GOAL := ${ART_DIR}/${name}
+ARTIFACT := ${ART_DIR}/${name}
+.DEFAULT_GOAL := ${ARTIFACT}
 compiler := c++
 COMPILER_FLAG_LIST += -fsanitize=undefined -D_GLIBCXX_DEBUG -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_DEBUG_PEDANTIC -D_GLIBCXX_SANITIZE_VECTOR $(shell pkg-config --cflags sdl2)
 LINKER_FLAG_LIST += -fsanitize=undefined $(shell pkg-config --libs sdl2)
-ARTIFACT := ${ART_DIR}/${name}
 else ifeq (${target}, web)
+ARTIFACT := ${ART_DIR}/${name}.js ${ART_DIR}/${name}.wasm
 .DEFAULT_GOAL := ${ART_DIR}/${name}.js
 compiler := em++
 COMPILER_FLAG_LIST += -sUSE_SDL=2
 LINKER_FLAG_LIST += -sUSE_SDL=2 -sALLOW_MEMORY_GROWTH
-ARTIFACT := ${ART_DIR}/${name}.js ${ART_DIR}/${name}.wasm
 else
 $(error Unsupported target "${target}".)
 endif
