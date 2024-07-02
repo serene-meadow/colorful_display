@@ -69,6 +69,7 @@ endif
 info:
 	@printf '%s\n' 'Program Name: ${name}'
 	@printf '%s\n' 'Default Goal: ${.DEFAULT_GOAL}'
+	@printf '%s\n' 'Artifact: ${ARTIFACT}'
 	@printf '%s\n' 'Object Files: ${OBJ_LIST}'
 	@printf '%s\n' 'Artifact Directory: ${ART_DIR}'
 	@printf '%s\n' 'Source Directory: ${SRC_DIR}'
