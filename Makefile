@@ -3,7 +3,7 @@
 	`web`: WebAssembly program with JavaScipt script to load it. 
 target := native
 
-# base name
+# base name of artifact
 name := colorful_display
 
 # source directory
