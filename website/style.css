@@ -108,3 +108,18 @@ button {
         opacity: 1;
     }
 }
+
+.fade_in_almost_animation {
+    animation: fade_in_almost_keyframes ease-in 4s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fade_in_almost_keyframes {
+    0% {
+        opacity: 0.00;
+    }
+    100% {
+        opacity: 0.90;
+    }
+}
