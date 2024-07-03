@@ -46,6 +46,7 @@ namespace Project::SdlContext {
     static std::unordered_map<SDL_FingerID, NumberedPoint> fingerMap;
 }
 
+/// @note I don't believe this function is used anywhere.
 void Project::SdlContext::refreshCachedWindowSize() {
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 }
