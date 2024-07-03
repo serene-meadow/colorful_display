@@ -14,7 +14,7 @@ html, body {
     justify-content: center;
     align-items: center;
 
-    position: relative /* this while be for the containing block for `#user_guide` */
+    position: relative /* this is for the containing block for `#user_guide` */
 }
 
 p {
