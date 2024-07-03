@@ -243,14 +243,21 @@ namespace Project::SdlContext {
         static constexpr std::uint_fast8_t colorSize{colorStringLength + 1u/* null terminator */};
 
         static constexpr char
-            red    [colorSize] = "\xF0\x9F\x9F\xA5",
-            orange [colorSize] = "\xF0\x9F\x9F\xA7",
-            yellow [colorSize] = "\xF0\x9F\x9F\xA8",
-            green  [colorSize] = "\xF0\x9F\x9F\xA9",
+            purple [colorSize] = "\xF0\x9F\x9F\xAA",
             blue   [colorSize] = "\xF0\x9F\x9F\xA6",
-            purple [colorSize] = "\xF0\x9F\x9F\xAA"
+            green  [colorSize] = "\xF0\x9F\x9F\xA9",
+            yellow [colorSize] = "\xF0\x9F\x9F\xA8",
+            orange [colorSize] = "\xF0\x9F\x9F\xA7",
+            red    [colorSize] = "\xF0\x9F\x9F\xA5"
         ;
-        static constexpr std::array colorList{red, orange, yellow, green, blue, purple};
+        static constexpr std::array colorList{
+            purple,
+            blue,
+            green,
+            yellow,
+            orange,
+            red,
+        };
 
         static_assert(colorList.size() <= std::numeric_limits<std::uint_fast8_t>::max());
         static constexpr std::uint_fast8_t colorListSize{colorList.size()};
