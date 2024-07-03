@@ -27,6 +27,7 @@ button {
     font-size: clamp(8.9px, calc(2.75vw + 1vh), 102%);
     cursor: pointer;
     border-radius: 6px;
+    color: white;
 }
 
 .container {
@@ -68,7 +69,6 @@ button {
 
 #epilepsy_warning button {
     background-color: var(--main-color);
-    color: white;
     transition: background-color 0.3s ease;
 }
 
@@ -87,7 +87,6 @@ button {
 
 #user_guide button {
     background-color: darkcyan;
-    color: white;
     transition: background-color 0.64s ease;
 }
 
