@@ -1,20 +1,28 @@
 html, body {
+    /* shape */
     margin: 0;
     padding: 0;
     height: 100vh;
     width: 100vw;
-    overflow: auto;
-    background-color: #AEC6CF;
-    font-family: Arial, Helvetica, sans-serif;
-    color: black;
 
-    /* Flexbox */
+    /* structure */
+    overflow: auto;
+
+    /* position */
+    position: relative; /* this is for the containing block for `#user_guide` */
+
+    /* text */
+    font-family: Arial, Helvetica, sans-serif;
+    
+    /* color */
+    color: black;
+    background-color: #AEC6CF;
+
+    /* flexbox */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    position: relative /* this is for the containing block for `#user_guide` */
 }
 
 p {
