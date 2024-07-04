@@ -43,11 +43,6 @@ SDL_Color Project::makeRgbaColor(
     };
 }
 
-double Project::HslaColor::hueWrap(double const value) {
-    static constexpr double fullCycle{360.0};
-    return wrapValue(value, fullCycle);
-}
-
 double Project::HslaColor::getCyclicHue(
     double const hue,
     double const percentage,

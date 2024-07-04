@@ -53,7 +53,10 @@ class Project::HslaColor {
       double const depth
     );
 
-    static double hueWrap(double const value);
+    static inline double Project::HslaColor::hueWrap(double const value) {
+      static constexpr double fullCycle{360.0};
+      return wrapValue(value, fullCycle);
+    }
 
     SDL_Color toRgbaColor() const;
     std::string toString() const;
