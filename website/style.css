@@ -69,7 +69,7 @@ button {
     border: 0px solid var(--main-color);
 }
 
-#epilepsy_warning * {
+#epilepsy_warning > * {
     margin: 2.35%;
 }
 
@@ -93,8 +93,8 @@ button {
     background-color: lightskyblue;
 }
 
-#user_guide * {
-    margin: 1.35%;
+#user_guide > * {
+    margin: 1.55%;
 }
 
 #user_guide button {
