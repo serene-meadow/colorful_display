@@ -282,7 +282,7 @@ namespace Project::SdlContext {
         cachedColorOffset = colorOffset;
 
         static constexpr std::uint_fast8_t bufferColorCount{colorListSize + 4u};
-        static constexpr std::size_t bufferSize{colorStringLength * bufferColorCount/* color count */ + 1uL/* null terminator */};
+        static constexpr std::size_t bufferSize{colorStringLength * bufferColorCount/* color count */ + 1u/* null terminator */};
         static char buffer[bufferSize] = {}/* (null terminated) */;
 
         for (std::uint_fast8_t colorIndex{0u}; colorIndex < bufferColorCount; ++colorIndex) {
