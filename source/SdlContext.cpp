@@ -38,6 +38,7 @@ namespace Project::SdlContext {
 
     struct NumberedPoint : SDL_FPoint {
         using NumberType = std::uint_least8_t;
+        /// @note I believe this field is unused, so this `struct NumberedPoint` is unnecessary; can just use `SDL_FPoint`.
         NumberType number;
         explicit constexpr NumberedPoint(SDL_FPoint const &point, std::uint_least8_t const number):
             SDL_FPoint(point), number{number}
@@ -399,7 +400,6 @@ void Project::SdlContext::refreshWindow() {
 
             for (auto const &[identifier, point] : fingerMap) processPoint(
                 point,
-                // (point.number % 2u == 0u) ? PointType::sink : PointType::source
                 PointType::sink
             );
 
