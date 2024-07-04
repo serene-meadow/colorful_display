@@ -26,13 +26,13 @@ html, body {
 }
 
 p {
-    font-size: clamp(11px, calc(3.5vw + 1vh), 142%);
+    font-size: clamp(11px, min(4.5vw, 4.5vh), 142%);
 }
 
 button {
     border: none;
     padding: 1.26% 3.2%;
-    font-size: clamp(8.9px, calc(2.75vw + 1vh), 102%);
+    font-size: clamp(8.9px, min(3.75vw, 3.75vh), 102%);
     cursor: pointer;
     border-radius: 6px;
     color: white;
@@ -71,7 +71,7 @@ button {
 
 #epilepsy_warning h1 {
     color: var(--main-color);
-    font-size: clamp(15px, calc(4.035vw + 1.15vh), 228%);
+    font-size: clamp(15px, min(6.535vw, 6.535vh), 228%);
     margin-bottom: 1%;
 }
 
