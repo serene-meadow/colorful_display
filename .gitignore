@@ -3,6 +3,7 @@
 !.gitignore
 !.gitkeep
 !.github
+!.vscode
 
 # Directory with the resulting program.
 artifact/

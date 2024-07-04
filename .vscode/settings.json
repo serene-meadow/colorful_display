@@ -1,0 +1,10 @@
+{
+    "livePreview.openPreviewTarget": "External Browser",
+    "livePreview.defaultPreviewPath": "website/",
+    "livePreview.autoRefreshPreview": "On All Changes in Editor",
+    "files.readonlyInclude": {
+        "artifact/**": true,
+        "build/**": true,
+        "website/compiled/**": true
+    }
+}
