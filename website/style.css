@@ -51,8 +51,12 @@ button {
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
 
     /* shape */
-    width: clamp(23px, 53vw, 90vw);
-    height: clamp(3px, 56.5vh, 90vh);
+    --width: 60;
+    min-width: calc(300px * var(--width) / 100);
+    width: calc(1vw * var(--width));
+    --height: 60;
+    min-height: calc(300px * var(--height) / 100);
+    height: calc(1vh * var(--height));
     margin: 1.5%;
     padding: 0.74%;
     border-radius: 25px;
