@@ -135,37 +135,3 @@ button {
         opacity: 0.90;
     }
 }
-
-.has_tooltip {
-    cursor: help;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-}
-
-[role="tooltip"] {
-    /* presentation */
-    visibility: hidden;
-
-    /* text */
-    font-size: small;
-
-    /* position */
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-
-    /* shape */
-    border-radius: 5px;
-
-    /* color */
-    background: black;
-    color: white;
-}
-
-.has_tooltip:hover, .has_tooltip:focus {
-    position: relative;
-}
-
-.has_tooltip:hover + [role="tooltip"], .has_tooltip:focus + [role="tooltip"] {
-    visibility: visible;
-}
