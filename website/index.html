@@ -93,9 +93,24 @@
         };
     </script>
 
+    <!-- The content in this division isn't coherent without the external CSS that makes the tooltips invisible. -->
     <div id="user_guide" class="container" style="display: none;">
-        <p>Hold left click or touch to interact with the animation.</p>
-        <p>Hold right click or pinch to increase the intensity.</p>
+        <p>
+            <span class="has_tooltip" aria-describedby="tooltip-hold_left_click">Hold left click</span>
+            <span role="tooltip" id="tooltip-hold_left_click">When using a mouse or trackpad, you can hold left click on the canvas to warp the animation.</span>
+            or
+            <span class="has_tooltip" aria-describedby="tooltip-touch">touch</span>
+            <span role="tooltip" id="tooltip-touch">When using a touchscreen, you can touch the canvas with one or more fingers to warp the animation.</span>
+            to warp the animation.
+        </p>
+        <p>
+            <span class="has_tooltip" aria-describedby="tooltip-hold_right_click">Hold right click</span>
+            <span role="tooltip" id="tooltip-hold_right_click">When using a mouse or trackpad, holding right click on the canvas will increase the intensity of the animation exponentially over time. The rate of increase is capped. Pressing the middle scroll button will reset the intensity.</span>
+            or
+            <span class="has_tooltip" aria-describedby="tooltip-pinch">pinch</span>
+            <span role="tooltip" id="tooltip-pinch">When using a touchscreen, if you do a pinch gesture on the canvas, the animation's intensity will increase by a factor of the number of fingers detected from the pinch gesture. Frequent pinch gestures increase the intensity exponentially, though the rate of increase is capped.</span>
+            to increase the intensity.
+        </p>
         <button onclick="this.parentElement.style.display = 'none'">Close.</button>
     </div>
 
