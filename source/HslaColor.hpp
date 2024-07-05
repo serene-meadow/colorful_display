@@ -53,7 +53,7 @@ class Project::HslaColor {
       double const depth
     );
 
-    static inline double Project::HslaColor::hueWrap(double const value) {
+    static inline double hueWrap(double const value) {
       static constexpr double fullCycle{360.0};
       return wrapValue(value, fullCycle);
     }
