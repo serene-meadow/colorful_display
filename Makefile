@@ -37,8 +37,8 @@ else ifeq (${target}, web)
 ARTIFACT := ${ART_DIR}/${name}.js ${ART_DIR}/${name}.wasm
 .DEFAULT_GOAL := ${ART_DIR}/${name}.js
 compiler := em++
-COMPILER_FLAG_LIST += -sUSE_SDL=2
-LINKER_FLAG_LIST += -sUSE_SDL=2 -sALLOW_MEMORY_GROWTH
+COMPILER_FLAG_LIST += --use-port=sdl2
+LINKER_FLAG_LIST += --use-port=sdl2 -sALLOW_MEMORY_GROWTH
 else
 $(error Unsupported target "${target}".)
 endif
