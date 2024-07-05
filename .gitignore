@@ -1,12 +1,5 @@
-# "Hidden" files.
-.*
-!.gitignore
-!.gitkeep
-!.github
-!.vscode
-
 # Directory with the resulting program.
 artifact/
 
-# Directory with dep files and object files.
+# Directory with `make` dependency files and C++ object files.
 build/
