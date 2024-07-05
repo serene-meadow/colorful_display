@@ -14,7 +14,7 @@ The purpose of this repository is to host a [webpage](https://adrian-javid.githu
 
 This project uses a [`Makefile`](https://www.gnu.org/software/make/manual/make.html) to build.
 
-Since this repository is mainly for a single webpage, I don't feel the need to add options for building for other platforms besides Linux and [WebAssembly (WASM)](https://webassembly.org/).
+This project builds for Linux and [WebAssembly (WASM)](https://webassembly.org/).
 
 When building either for the native target or the website target, an `artifact` directory and a `build` directory are created. The `build` directory is for object files and dependency files. The compiled program is put into the `artifact` directory.
 
