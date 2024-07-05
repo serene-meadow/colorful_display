@@ -2,11 +2,13 @@
 
 This program displays animated color gradients.
 
+![A color gradient.](website/preview_image.png)
+
 The purpose of this repository is to host a [webpage](https://adrian-javid.github.io/colorful_display/) that displays the graphical output of the program.
 
 ## Project File Structure
-* `source/` contains the C++ code for the graphical program.
-* `website/` is the root of which to host the webpage.
+* [`source/`](source/) contains the C++ code for the graphical program.
+* [`website/`](website/) is the root of which to host the webpage.
 
 ## Building
 
@@ -17,7 +19,7 @@ Since this repository is mainly for a single webpage, I don't feel the need to a
 When building either for the native target or the website target, an `artifact` directory and a `build` directory are created. The `build` directory is for object files and dependency files. The compiled program is put into the `artifact` directory.
 
 
-When compiling for the web, another additional directory `website/compiled` is created if it doesn't already exist. The WebAssembly program is copied to here so that the webpage can use it.
+When compiling for the web, another additional directory [`website/compiled`](website/compiled) is created if it doesn't already exist. The WebAssembly program is copied to here so that the webpage can use it.
 
 ```sh
 # Compiles both the native target and the website target.
