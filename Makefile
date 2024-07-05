@@ -25,7 +25,7 @@ OBJ_LIST := $(patsubst ${SRC_DIR}/%.cpp,${BLD_DIR}/%.o,$(wildcard ${SRC_DIR}/*.c
 DEP_LIST := $(OBJ_LIST:.o=.d)
 
 COMPILER_FLAG_LIST := -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror -MMD -MP
-LINKER_FLAG_LIST := #(empty string)
+LINKER_FLAG_LIST := -O3
 
 ifeq (${target}, native)
 ARTIFACT := ${ART_DIR}/${name}
