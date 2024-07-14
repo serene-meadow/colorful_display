@@ -57,6 +57,6 @@ make website
 
 Linux [`make`](https://www.gnu.org/software/make/) is used to build this program.
 
-The [Emscripten](https://emscripten.org/) compiler is used to compile the C++ code to WebAssembly for the webpage. To compile natively, another compiler is needed.
+The [Emscripten](https://emscripten.org/) compiler is used to compile the C++ code to WebAssembly for the webpage. To compile natively, another compiler is needed. Specifically, this project was tested with Emscripten version 3.1.63.
 
 [Simple DirectMedia Layer (SDL)](https://www.libsdl.org/) is used for graphics and input.
